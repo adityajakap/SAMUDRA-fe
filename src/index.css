@@ -1,0 +1,12 @@
+@import url('https://fonts.cdnfonts.com/css/segoe-ui');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-segoe bg-neutralBg text-white;
+}
+.font-segoe {
+  font-family: 'Segoe UI', sans-serif;
+}
