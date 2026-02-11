@@ -27,7 +27,7 @@ function StatCard({ label, value, sub, icon: Icon }: StatCardProps) {
 }
 
 interface TodayForecastProps {
-  adm4Code?: string  // kode wilayah administratif level 4 BMKG
+  adm4Code?: string  
 }
 
 export function TodayForecast({ adm4Code }: TodayForecastProps) {

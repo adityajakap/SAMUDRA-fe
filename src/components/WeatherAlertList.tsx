@@ -31,7 +31,7 @@ export function WeatherAlertList() {
   return (
     <div className="space-y-4">
       {alerts.map((alert, idx) => (
-        <WeatherAlertCard key={idx} {...alert} />
+        <WeatherAlertCard key={idx} {...alert} id={idx} />
       ))}
     </div>
   )

@@ -1,5 +1,5 @@
 import { ArrowRight, AlertTriangle, CloudRain } from "lucide-react"
-
+import { Link } from "react-router-dom"
 
 export interface WeatherAlertProps {
   location: string
@@ -10,6 +10,7 @@ export interface WeatherAlertProps {
   forecast: string
   recommendation: string
   loading?: boolean
+  id?: number // Tambahkan id sebagai index
 }
 
 export function WeatherAlertCard({
@@ -21,7 +22,7 @@ export function WeatherAlertCard({
   forecast,
   recommendation,
   loading,
-
+  id,
 }: WeatherAlertProps) {
   if (loading) {
     return (
@@ -119,15 +120,15 @@ export function WeatherAlertCard({
       </div>
 
       <div className="mt-3 text-right">
-        <button
-          type="button"
-          className="text-sm text-primary font-semibold inline-flex items-center gap-2"
+        <Link
+          to={`/alerts/${id ?? 0}`}
+          className="text-sm text-primary font-semibold inline-flex items-center gap-2 hover:text-primary/80 transition-colors"
         >
           Lihat Detail
           <span className="w-6 h-6 flex items-center justify-center bg-primary text-white rounded-full">
             <ArrowRight className="w-3 h-3" aria-hidden />
           </span>
-        </button>
+        </Link>
       </div>
     </article>
   )
