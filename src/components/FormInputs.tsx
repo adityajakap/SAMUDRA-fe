@@ -35,7 +35,7 @@ export function NumberInput({ value, onChange, placeholder, min, max, required }
       min={min}
       max={max}
       required={required}
-      className="w-full p-3 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      className="w-full p-3 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-700 transition"
     />
   )
 }

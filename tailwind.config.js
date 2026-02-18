@@ -10,7 +10,7 @@ export default {
         segoe: ['"Segoe UI"', 'system-ui', 'sans-serif'],
       },
       colors: {
-        primary: '#0A0AFF',
+        primary: '#0000BF',
         secondary: '#00B4D8',
         ocean: '#03045E',
         warning: '#FFD166',

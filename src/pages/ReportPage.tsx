@@ -38,7 +38,7 @@ export function ReportPage() {
           <button
             type="button"
             onClick={() => setIsModalOpen(true)}
-            className="w-full p-3 rounded-lg bg-white border border-gray-300 text-left hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            className="w-full p-3 rounded-lg bg-white border border-gray-300 text-left hover:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-800 transition"
           >
             {selectedObservations.length > 0 ? (
               <span className="text-sm text-gray-900">{selectedObservations.length} tanda dipilih</span>
@@ -114,7 +114,7 @@ export function ReportPage() {
         </FormField>
 
         <Button type="submit" variant="primary" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? 'Mengirim...' : 'Kirim Laporan'}
+          {isSubmitting ? 'Menambahkan...' : 'Tambahkan'}
         </Button>
       </form>
 

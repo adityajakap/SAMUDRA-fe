@@ -64,7 +64,7 @@ const RegisterPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Memuat...</p>
@@ -74,21 +74,14 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-12">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              SAMUDRA
+              Daftar
             </h1>
-            <p className="text-gray-600">
-              Sistem Alokasi dan Manajemen untuk Distribusi Respon Ancaman
-            </p>
           </div>
-
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-            Daftar Akun Baru
-          </h2>
 
           {error && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -181,7 +174,7 @@ const RegisterPage = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-blue-700 text-white py-3 rounded-lg font-medium hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Memproses...' : 'Daftar'}
             </button>

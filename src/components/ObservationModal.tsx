@@ -55,7 +55,7 @@ export function ObservationModal({ isOpen, onClose, selectedValues, onConfirm }:
                   value={option.value}
                   checked={tempSelections.includes(option.value)}
                   onChange={() => handleToggle(option.value)}
-                  className="mt-1 w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-5 h-5 text-blue-700 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700 group-hover:text-gray-900 flex-1">
                   {option.label}
@@ -78,7 +78,7 @@ export function ObservationModal({ isOpen, onClose, selectedValues, onConfirm }:
             <button
               type="button"
               onClick={handleConfirm}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 transition"
             >
               Konfirmasi
             </button>
