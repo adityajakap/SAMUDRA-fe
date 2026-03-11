@@ -41,7 +41,6 @@ export const reportService = {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -56,7 +55,6 @@ export const reportService = {
 
     const response = await fetch(`${API_BASE_URL}/api/history?${params}`, {
       method: 'GET',
-      credentials: 'include',
     });
 
     return handleResponse<HistoryResponse>(response);
