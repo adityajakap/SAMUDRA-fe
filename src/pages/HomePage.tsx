@@ -1,12 +1,26 @@
+import { useState } from "react"
 import { MainLayout } from "../components/layout/MainLayout"
-import { ArrowRight, MapPin, Search } from "lucide-react"
+import { ArrowRight, MapPin, Search, Plus } from "lucide-react"
 import { TodayForecast } from "../components/TodayForecast"
 import { WeatherAlertList } from "../components/WeatherAlertList"
+import { ReportBottomSheet } from "../components/ReportBottomSheet"
 
 export function HomePage() {
+  const [isReportOpen, setIsReportOpen] = useState(false);
+
   return (
     <MainLayout>
       <div className="space-y-3">
+        {/* Floating Action Button for Report - Tanda Alam */}
+        <button
+          onClick={() => setIsReportOpen(true)}
+          aria-label="Lapor Tanda Alam"
+          className="fixed bottom-6 right-6 flex items-center gap-2 px-5 py-4 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 active:scale-95 transition focus:outline-none focus:ring-4 focus:ring-indigo-300 z-30 font-medium"
+        >
+          <Plus className="w-5 h-5" strokeWidth={2.5} />
+          <span>Lapor Tanda</span>
+        </button>
+
         <h1 className="text-xl font-bold flex items-center gap-2">
           <MapPin className="w-5 h-5 text-primary" aria-hidden />
           Pantai Depok Bantul
@@ -39,6 +53,12 @@ export function HomePage() {
       </div>
 
       </div>
+
+      {/* Report Bottom Sheet - Multi-Step Flow */}
+      <ReportBottomSheet
+        isOpen={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
+      />
     </MainLayout>
   )
 }

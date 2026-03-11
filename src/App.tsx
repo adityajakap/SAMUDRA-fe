@@ -7,8 +7,8 @@ import { ReportPage } from "./pages/ReportPage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 import ProfilePage from "./pages/ProfilePage"
+import HistoryPage from "./pages/HistoryPage"
 import { ProtectedRoute } from "./components/ProtectedRoute"
-// import { HistoryPage } from "./pages/HistoryPage"
 
 export default function App() {
   return (
@@ -29,7 +29,14 @@ export default function App() {
             </ProtectedRoute>
           } 
         />
-        {/* <Route path="/history" element={<HistoryPage />} /> */}
+        <Route 
+          path="/history" 
+          element={
+            <ProtectedRoute>
+              <HistoryPage />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </BrowserRouter>
   )

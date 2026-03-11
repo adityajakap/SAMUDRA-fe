@@ -27,4 +27,4 @@ export const INTERACTION_LEVELS = [
   { value: 5, label: "Sangat Tinggi" },
 ] as const
 
-export const API_BASE_URL = 'http://localhost:3000'
+export const API_BASE_URL = 'https://backend.fruz.cloud'

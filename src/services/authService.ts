@@ -1,10 +1,24 @@
 import type { LoginInput, RegisterInput, PublicUser } from '../types/auth';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://backend.fruz.cloud';
+const TOKEN_KEY = 'auth_token';
 
 export class AuthError extends Error {
   statusCode?: number;
   details?: unknown;
+}
+
+function getAuthHeaders(): HeadersInit {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    return {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+  }
+  return {
+    'Content-Type': 'application/json',
+  };
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
@@ -36,7 +50,6 @@ export const authService = {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify(data),
     });
 
@@ -49,28 +62,40 @@ export const authService = {
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify(credentials),
     });
 
-    await handleResponse(response);
+    const data = await handleResponse<{ ok: boolean; token: string; user: PublicUser }>(response);
+    if (data.token) {
+      localStorage.setItem(TOKEN_KEY, data.token);
+    }
   },
 
   async logout(): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
       method: 'POST',
-      credentials: 'include',
+      headers: getAuthHeaders(),
     });
 
     await handleResponse(response);
+    localStorage.removeItem(TOKEN_KEY);
   },
 
   async getCurrentUser(): Promise<PublicUser> {
     const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
       method: 'GET',
-      credentials: 'include',
+      headers: getAuthHeaders(),
     });
 
-    return handleResponse<PublicUser>(response);
+    const data = await handleResponse<{ ok: boolean; user: PublicUser }>(response);
+    return data.user;
+  },
+
+  getToken(): string | null {
+    return localStorage.getItem(TOKEN_KEY);
+  },
+
+  clearToken(): void {
+    localStorage.removeItem(TOKEN_KEY);
   },
 };

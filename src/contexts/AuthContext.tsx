@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         isLoading: false,
       });
     } catch {
+      authService.clearToken();
       setState({
         user: null,
         isAuthenticated: false,
@@ -65,14 +66,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setState(prev => ({ ...prev, isLoading: true }));
     try {
       await authService.logout();
+    } catch (error) {
+      // Even if logout fails on the server, clear local state
+      console.error('Logout error:', error);
+    } finally {
+      authService.clearToken();
       setState({
         user: null,
         isAuthenticated: false,
         isLoading: false,
       });
-    } catch (error) {
-      setState(prev => ({ ...prev, isLoading: false }));
-      throw error;
     }
   };
 
