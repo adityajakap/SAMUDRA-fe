@@ -52,6 +52,9 @@ export const BottomSheet = ({ isOpen, onClose, title, children }: BottomSheetPro
         role="dialog"
         aria-modal="true"
         aria-labelledby="bottom-sheet-title"
+        style={{
+          paddingBottom: 'var(--safe-area-inset-bottom)'
+        }}
       >
         {/* Handle bar */}
         <div className="flex justify-center pt-3 pb-2">

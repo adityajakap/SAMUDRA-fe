@@ -12,8 +12,8 @@ export default defineConfig({
         name: "SAMUDRA",
         short_name: "SAMUDRA",
         description: "Sistem Aplikasi Monitoring Diseminasi dan Informasi Kebencanaan",
-        theme_color: "#0077ffff",
-        background_color: "#155bffff",
+        theme_color: "#F9F9F9",
+        background_color: "#F9F9F9",
         display: "standalone",
         start_url: "/",
         icons: [

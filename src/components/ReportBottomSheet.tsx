@@ -151,13 +151,20 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+        className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 hw-accelerate"
         onClick={handleClose}
+        style={{ WebkitTapHighlightColor: 'transparent' }}
       />
 
       {/* Bottom Sheet */}
       <div
-        className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 overflow-hidden transition-all duration-300 ${sheetHeight}`}
+        className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 overflow-hidden hw-accelerate ${sheetHeight}`}
+        style={{ 
+          paddingBottom: 'var(--safe-area-inset-bottom)',
+          transition: 'height 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)'
+        }}
       >
         {/* Handle bar */}
         <div className="flex justify-center pt-3 pb-2">
@@ -193,7 +200,13 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto h-[calc(100%-6rem)] px-6 py-6">
+        <div 
+          className="overflow-y-auto h-[calc(100%-6rem)] px-6 py-6 smooth-scroll"
+          style={{ 
+            WebkitOverflowScrolling: 'touch',
+            touchAction: 'pan-y'
+          }}
+        >
           {/* Step 1: Beach Selection */}
           {step === 'beach' && (
             <div className="space-y-3">
@@ -201,7 +214,8 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
                 <button
                   key={beach.value}
                   onClick={() => handleBeachSelect(beach.value as BeachLocation)}
-                  className="w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all"
+                  className="w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 touch-optimize"
+                  style={{ transition: 'border-color 0.2s, background-color 0.2s' }}
                 >
                   <span className="font-medium text-gray-900">{beach.label}</span>
                 </button>
@@ -216,7 +230,8 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
                 <button
                   key={category.id}
                   onClick={() => handleCategorySelect(category.id)}
-                  className="aspect-square p-6 border-2 border-gray-200 rounded-2xl hover:border-blue-500 hover:bg-blue-50 transition-all flex flex-col items-center justify-center gap-3"
+                  className="aspect-square p-6 border-2 border-gray-200 rounded-2xl hover:border-blue-500 hover:bg-blue-50 touch-optimize flex flex-col items-center justify-center gap-3"
+                  style={{ transition: 'border-color 0.2s, background-color 0.2s' }}
                 >
                   <span className="text-4xl">{category.icon}</span>
                   <span className="font-medium text-center text-sm">{category.label}</span>
@@ -241,7 +256,8 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
                 <button
                   key={attributeGroup}
                   onClick={() => handleAttributeSelect(attributeGroup)}
-                  className="w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all"
+                  className="w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 touch-optimize"
+                  style={{ transition: 'border-color 0.2s, background-color 0.2s' }}
                 >
                   <span className="font-medium text-gray-900">{attributeGroup}</span>
                   <div className="text-xs text-gray-500 mt-1">
@@ -266,11 +282,12 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
                     <button
                       key={idx}
                       onClick={() => toggleObservation(obs)}
-                      className={`w-full p-4 text-left border-2 rounded-xl transition-all ${
+                      className={`w-full p-4 text-left border-2 rounded-xl touch-optimize ${
                         isSelected
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
+                      style={{ transition: 'border-color 0.2s, background-color 0.2s' }}
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-medium text-gray-900">{obs.label}</span>

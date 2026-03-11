@@ -15,7 +15,13 @@ export function HomePage() {
         <button
           onClick={() => setIsReportOpen(true)}
           aria-label="Lapor Tanda Alam"
-          className="fixed bottom-6 right-6 flex items-center gap-2 px-5 py-4 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 active:scale-95 transition focus:outline-none focus:ring-4 focus:ring-indigo-300 z-30 font-medium"
+          className="fixed right-6 flex items-center gap-2 px-5 py-4 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 active:scale-95 focus:outline-none focus:ring-4 focus:ring-indigo-300 z-30 font-medium hw-accelerate touch-optimize"
+          style={{
+            bottom: 'calc(1.5rem + var(--safe-area-inset-bottom))',
+            transition: 'transform 0.15s ease-out, background-color 0.2s',
+            WebkitTransform: 'translateZ(0)',
+            transform: 'translateZ(0)'
+          }}
         >
           <Plus className="w-5 h-5" strokeWidth={2.5} />
           <span>Lapor Tanda</span>
