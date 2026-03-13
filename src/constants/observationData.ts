@@ -18,7 +18,7 @@ export const BEACH_LOCATIONS = [
 // 3-Level Nested Structure: Category → AttributeGroup → Observations
 export const OBSERVATION_DATA: Record<string, Record<string, IObservation[]>> = {
   "🌊 Kondisi Laut & Gempa": {
-    "Air Laut & Ombak (Sea)": [
+    "Air Laut & Ombak 🌊": [
       { label: "Air laut sangat tenang", attribute: "Sea", object: "Tidal Movement", value: "Calm (no high or low tide)" },
       { label: "Air laut tiba-tiba surut", attribute: "Sea", object: "Water Level", value: "Sudden Recession" },
       { label: "Ombak tiba-tiba membesar", attribute: "Sea", object: "Wave Condition", value: "Very Large" },
@@ -27,17 +27,17 @@ export const OBSERVATION_DATA: Record<string, Record<string, IObservation[]>> = 
       { label: "Air laut berubah keruh", attribute: "Sea", object: "Water Clarity", value: "Murky/Turbid" },
       { label: "Permukaan air beriak melengkung", attribute: "Sea", object: "Surface Pattern", value: "Rippling/Arc Formation" }
     ],
-    "Getaran Bumi (Seismic)": [
+    "Getaran Bumi 🌍": [
       { label: "Terasa guncangan gempa", attribute: "Seismic", object: "Ground Sensation", value: "Felt Earthquake" }
     ]
   },
   "☁️ Cuaca, Angin & Awan": {
-    "Awan (Cloud)": [
+    "Awan ☁️": [
       { label: "Awan turun merendah", attribute: "Cloud", object: "Cloud Pattern", value: "Descending Clusters" },
       { label: "Awan terlihat menyatu", attribute: "Cloud", object: "Cloud Pattern", value: "Merging Clusters" },
       { label: "Mendung tebal/pekat", attribute: "Cloud", object: "Cloud Density", value: "Thick Clouds" }
     ],
-    "Arah Angin & Cuaca (Atmosphere)": [
+    "Arah Angin & Cuaca ⛅": [
       { label: "Musim Angin Timur", attribute: "Atmosphere", object: "Wind/Monsoon Season", value: "East Wind (Monsoon)" },
       { label: "Musim Angin Barat", attribute: "Atmosphere", object: "Wind/Monsoon Season", value: "West Wind (Monsoon)" },
       { label: "Transisi Barat ke Timur", attribute: "Atmosphere", object: "Wind/Monsoon Season", value: "West-to-East Transition" },
@@ -47,12 +47,12 @@ export const OBSERVATION_DATA: Record<string, Record<string, IObservation[]>> = 
       { label: "Suara dentuman keras", attribute: "Atmosphere", object: "Ambient Sound", value: "Thunderous Booms/Rumbling" },
       { label: "Suasana sunyi senyap", attribute: "Atmosphere", object: "Ambient Sound", value: "Extreme Silence" }
     ],
-    "Petir (Lightning)": [
+    "Petir ⚡": [
       { label: "Petir menyambar satu sisi", attribute: "Lightning", object: "Lightning Activity", value: "Single-Sided" }
     ]
   },
   "🌌 Bintang & Bulan": {
-    "Bintang (Star)": [
+    "Bintang 🌟": [
       { label: "Bintang berkedip-kedip", attribute: "Star", object: "Star Condition", value: "Many/Twinkling" },
       { label: "Bintang tidak terlihat", attribute: "Star", object: "Star Condition", value: "Not Visible" },
       { label: "Bintang mendekati bulan", attribute: "Star", object: "Star Position", value: "Approaching/Aligning with Moon" },
@@ -60,25 +60,25 @@ export const OBSERVATION_DATA: Record<string, Record<string, IObservation[]>> = 
       { label: "Bintang Tujuh terlihat jelas", attribute: "Star", object: "Star Cluster", value: "Pleiades (Seven Stars) Observed" },
       { label: "Bintang Tujuh tenggelam", attribute: "Star", object: "Pleiades (Seven Stars)", value: "Immersed/Not Visible" }
     ],
-    "Bulan (Moon)": [
+    "Bulan 🌕": [
       { label: "Sedang Bulan Purnama", attribute: "Moon", object: "Moon Phase", value: "Full Moon" }
     ]
   },
   "🐋 Tanda dari Hewan": {
-    "Burung Camar (Seagull)": [
+    "Burung Camar 🦅": [
       { label: "Terbang tergesa-gesa", attribute: "Seagull", object: "Seagull Movement", value: "Hasty Flying" },
       { label: "Bersuara nyaring", attribute: "Seagull", object: "Seagull Sound", value: "Loud Calling" }
     ],
-    "Lumba-lumba (Dolphin)": [
+    "Lumba-lumba 🐬": [
       { label: "Mengawal perahu", attribute: "Dolphin", object: "Dolphin Activity", value: "Approaching/Guiding Boat" }
     ],
-    "Paus (Whale)": [
+    "Paus 🐋": [
       { label: "Mengibaskan ekor", attribute: "Whale", object: "Whale Activity", value: "Surfaces and Tail Flicking" }
     ],
-    "Serangga (Animal Behavior)": [
+    "Serangga 🐜": [
       { label: "Banyak kecoa terbang di perahu", attribute: "Animal Behavior", object: "Cockroach Activity", value: "Flying Inside Boat" }
     ],
-    "Hewan Peliharaan (Pets)": [
+    "Hewan Peliharaan 🐕": [
       { label: "Hewan peliharaan gelisah", attribute: "Pets", object: "Pets", value: "Distressed" }
     ]
   }
