@@ -8,9 +8,11 @@ export function WeatherAlertList() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
         {Array.from({ length: WEATHER_CONFIG.SKELETON_COUNT }).map((_, idx) => (
-          <WeatherAlertSkeleton key={`skeleton-${idx}`} />
+          <div key={`skeleton-${idx}`} className="min-w-[85%] snap-start sm:min-w-[420px]">
+            <WeatherAlertSkeleton />
+          </div>
         ))}
       </div>
     )
@@ -29,9 +31,11 @@ export function WeatherAlertList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
       {alerts.map((alert, idx) => (
-        <WeatherAlertCard key={idx} {...alert} id={idx} />
+        <div key={idx} className="min-w-[85%] snap-start sm:min-w-[420px]">
+          <WeatherAlertCard {...alert} id={idx} />
+        </div>
       ))}
     </div>
   )

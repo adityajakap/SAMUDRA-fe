@@ -4,6 +4,7 @@ import { ArrowRight, MapPin, Search, Plus } from "lucide-react"
 import { TodayForecast } from "../components/TodayForecast"
 import { WeatherAlertList } from "../components/WeatherAlertList"
 import { ReportBottomSheet } from "../components/ReportBottomSheet"
+import { FishermanReportList } from "../components/FishermanReportList"
 
 export function HomePage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -58,9 +59,12 @@ export function HomePage() {
         <TodayForecast />
       </div>
 
+      <div className="space-y-3">
+        <h1 className="text-xl font-bold flex items-center gap-2 mt-5">Laporan Nelayan</h1>
+        <FishermanReportList />
+      </div>
       </div>
 
-      {/* Report Bottom Sheet - Multi-Step Flow */}
       <ReportBottomSheet
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
