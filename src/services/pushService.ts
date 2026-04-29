@@ -49,16 +49,27 @@ export const pushService = {
     subscription: PushSubscription,
     metadata?: { beach_location?: BeachLocation },
   ): Promise<void> {
+    const payload = metadata ? { subscription, metadata } : subscription
     const response = await fetch(`${API_BASE_URL}/api/push/subscribe`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ subscription, metadata }),
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
-      throw new Error("Gagal menyimpan subscription push")
+      let detail = ""
+      try {
+        detail = await response.text()
+      } catch {
+        detail = ""
+      }
+      throw new Error(
+        detail
+          ? `Gagal menyimpan subscription push: ${detail}`
+          : "Gagal menyimpan subscription push",
+      )
     }
   },
 
