@@ -160,8 +160,16 @@ registerRoute(
 
 self.addEventListener("message", (event) => {
   const data = event.data as { type?: string; value?: string } | null
-  if (!data || data.type !== "SET_BEACH_PREFERENCE" || !data.value) return
-  event.waitUntil(setPreference(BEACH_KEY, data.value))
+  if (!data) return
+
+  if (data.type === "SKIP_WAITING") {
+    self.skipWaiting()
+    return
+  }
+
+  if (data.type === "SET_BEACH_PREFERENCE" && data.value) {
+    event.waitUntil(setPreference(BEACH_KEY, data.value))
+  }
 })
 
 self.addEventListener("push", (event) => {
