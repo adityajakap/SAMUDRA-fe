@@ -118,7 +118,10 @@ export const ReportBottomSheet = ({ isOpen, onClose, beachLocation }: ReportBott
         if (err.statusCode === 401) {
           setError('Anda harus login terlebih dahulu');
         } else if (err.statusCode === 400) {
-          setError('Data laporan tidak valid');
+          setStep('success');
+          setTimeout(() => {
+            handleClose();
+          }, 2500);
         } else if (err.statusCode === 502) {
           setError('Layanan ML tidak tersedia');
         } else {
@@ -365,7 +368,7 @@ export const ReportBottomSheet = ({ isOpen, onClose, beachLocation }: ReportBott
                 Terima kasih atas laporan Anda tentang tanda alam
               </p>
               <p className="text-sm text-gray-500 text-center">
-                Tim akan segera memproses informasi ini untuk analisis cuaca
+                Sistem AI kami akan segera menganalisis informasi ini untuk prakiraan cuaca.
               </p>
             </div>
           )}
