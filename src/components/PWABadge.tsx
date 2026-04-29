@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
 export function PWABadge() {
@@ -18,6 +19,15 @@ export function PWABadge() {
     setOfflineReady(false)
     setNeedRefresh(false)
   }
+
+  useEffect(() => {
+    if (offlineReady && !needRefresh) {
+      const timer = setTimeout(() => {
+        setOfflineReady(false)
+      }, 4500)
+      return () => clearTimeout(timer)
+    }
+  }, [offlineReady, needRefresh, setOfflineReady])
 
   if (!offlineReady && !needRefresh) return null
 
