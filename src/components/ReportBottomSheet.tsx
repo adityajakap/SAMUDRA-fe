@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X, ChevronLeft, CheckCircle2, AlertCircle, Plus } from 'lucide-react';
 import type { IObservation, BeachLocation } from '../types/api';
 import { BEACH_LOCATIONS, OBSERVATION_DATA, CATEGORY_LIST } from '../constants/observationData';
@@ -8,22 +8,30 @@ import { reportService, ApiError } from '../services/reportService';
 interface ReportBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
+  beachLocation: BeachLocation;
 }
 
-type Step = 'beach' | 'category' | 'attribute' | 'condition' | 'summary' | 'success';
+type Step = 'category' | 'attribute' | 'condition' | 'summary' | 'success';
 
-export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) => {
-  const [step, setStep] = useState<Step>('beach');
-  const [selectedBeach, setSelectedBeach] = useState<BeachLocation | ''>('');
+export const ReportBottomSheet = ({ isOpen, onClose, beachLocation }: ReportBottomSheetProps) => {
+  const [step, setStep] = useState<Step>('category');
+  const [selectedBeach, setSelectedBeach] = useState<BeachLocation>(beachLocation);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedAttributeGroup, setSelectedAttributeGroup] = useState<string>('');
   const [observations, setObservations] = useState<IObservation[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>('');
 
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedBeach(beachLocation);
+      setStep('category');
+    }
+  }, [beachLocation, isOpen]);
+
   const resetForm = () => {
-    setStep('beach');
-    setSelectedBeach('');
+    setStep('category');
+    setSelectedBeach(beachLocation);
     setSelectedCategory('');
     setSelectedAttributeGroup('');
     setObservations([]);
@@ -33,11 +41,6 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
   const handleClose = () => {
     resetForm();
     onClose();
-  };
-
-  const handleBeachSelect = (beach: BeachLocation) => {
-    setSelectedBeach(beach);
-    setStep('category');
   };
 
   const handleCategorySelect = (category: string) => {
@@ -88,7 +91,7 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
   };
 
   const handleSubmit = async () => {
-    if (!selectedBeach || observations.length === 0) {
+    if (observations.length === 0) {
       setError('Data tidak lengkap');
       return;
     }
@@ -130,8 +133,7 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
   };
 
   const handleBack = () => {
-    if (step === 'category') setStep('beach');
-    else if (step === 'attribute') setStep('category');
+    if (step === 'attribute') setStep('category');
     else if (step === 'condition') setStep('attribute');
     else if (step === 'summary') setStep('category');
   };
@@ -145,7 +147,7 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
 
   if (!isOpen) return null;
 
-  const sheetHeight = step === 'condition' ? 'h-[85vh]' : step === 'beach' ? 'h-[50vh]' : 'h-[70vh]';
+  const sheetHeight = step === 'condition' ? 'h-[85vh]' : 'h-[70vh]';
 
   return (
     <>
@@ -174,7 +176,7 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
-            {(step === 'category' || step === 'attribute' || step === 'condition' || step === 'summary') && (
+            {(step === 'attribute' || step === 'condition' || step === 'summary') && (
               <button
                 onClick={handleBack}
                 className="p-1 hover:bg-gray-100 rounded-full transition-colors"
@@ -183,7 +185,6 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
               </button>
             )}
             <h2 className="text-xl font-bold text-gray-900">
-              {step === 'beach' && 'Pilih Lokasi Pantai'}
               {step === 'category' && 'Pilih Kategori'}
               {step === 'attribute' && 'Pilih Atribut/Objek'}
               {step === 'condition' && selectedAttributeGroup}
@@ -207,23 +208,7 @@ export const ReportBottomSheet = ({ isOpen, onClose }: ReportBottomSheetProps) =
             touchAction: 'pan-y'
           }}
         >
-          {/* Step 1: Beach Selection */}
-          {step === 'beach' && (
-            <div className="space-y-3">
-              {BEACH_LOCATIONS.map((beach) => (
-                <button
-                  key={beach.value}
-                  onClick={() => handleBeachSelect(beach.value as BeachLocation)}
-                  className="w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 touch-optimize"
-                  style={{ transition: 'border-color 0.2s, background-color 0.2s' }}
-                >
-                  <span className="font-medium text-gray-900">{beach.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Step 2: Category Selection */}
+          {/* Step 1: Category Selection */}
           {step === 'category' && (
             <div className="grid grid-cols-2 gap-4">
               {CATEGORY_LIST.map((category) => (

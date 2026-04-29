@@ -1,10 +1,13 @@
+import type { BeachLocation } from "../types/api"
+
 export type IntensityLevel = "rendah" | "sedang" | "tinggi"
 
 export interface FishermanReport {
-  id: number
+  id: string
+  beachValue?: BeachLocation
   lokasi: string
   waktu: string
-  gelombang: string
+  gelombang?: string
   intensity: IntensityLevel
   likCodes: string[]
   prakiraan?: string[]
@@ -13,7 +16,7 @@ export interface FishermanReport {
 
 export const FISHERMAN_REPORTS: FishermanReport[] = [
   {
-    id: 1,
+    id: "1",
     lokasi: "Pantai Depok",
     waktu: "Hari ini, 07:15",
     gelombang: "1.2 - 1.8 m",
@@ -27,7 +30,7 @@ export const FISHERMAN_REPORTS: FishermanReport[] = [
     ]
   },
   {
-    id: 2,
+    id: "2",
     lokasi: "Pantai Samas",
     waktu: "Hari ini, 09:40",
     gelombang: "2.0 - 2.6 m",

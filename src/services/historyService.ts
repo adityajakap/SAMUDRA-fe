@@ -1,4 +1,5 @@
 import { authService } from './authService';
+import type { BeachLocation } from '../types/api';
 
 const API_BASE_URL = 'https://backend.fruz.cloud';
 
@@ -8,6 +9,7 @@ export interface HistoryItem {
   alertId: string;
   reportId: string;
   serverTimestamp: number;
+  beach_location?: BeachLocation;
   client: {
     clientReportId: string | null;
     createdAtClient: number | null;
@@ -19,6 +21,7 @@ export interface HistoryItem {
   };
   input: {
     lik_codes: string[];
+    beach_location?: BeachLocation;
   };
   ml: {
     is_high_risk: boolean;
@@ -83,6 +86,22 @@ export const historyService = {
       limit: limit.toString(),
       mine: mine.toString(),
     });
+
+    const response = await fetch(`${API_BASE_URL}/api/history?${queryParams}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+
+    return handleResponse<HistoryResponse>(response);
+  },
+  async getDistributedHistory(params?: { limit?: number }): Promise<HistoryResponse> {
+    const queryParams = new URLSearchParams({
+      distribute: 'true',
+    });
+
+    if (params?.limit) {
+      queryParams.set('limit', params.limit.toString());
+    }
 
     const response = await fetch(`${API_BASE_URL}/api/history?${queryParams}`, {
       method: 'GET',

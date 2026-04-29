@@ -1,13 +1,20 @@
 import { useState } from "react"
 import { MainLayout } from "../components/layout/MainLayout"
-import { ArrowRight, MapPin, Search, Plus } from "lucide-react"
+import { ArrowRight, MapPin, Plus } from "lucide-react"
 import { TodayForecast } from "../components/TodayForecast"
 import { WeatherAlertList } from "../components/WeatherAlertList"
 import { ReportBottomSheet } from "../components/ReportBottomSheet"
 import { FishermanReportList } from "../components/FishermanReportList"
+import { PushNotificationCard } from "../components/PushNotificationCard"
+import { BEACH_LOCATIONS } from "../constants/observationData"
+import type { BeachLocation } from "../types/api"
 
 export function HomePage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [selectedBeach, setSelectedBeach] = useState<BeachLocation>("pantai_depok");
+  const selectedBeachLabel =
+    BEACH_LOCATIONS.find((beach) => beach.value === selectedBeach)?.label ??
+    "Pilih Pantai";
 
   return (
     <MainLayout>
@@ -28,20 +35,28 @@ export function HomePage() {
           <span>Lapor Tanda</span>
         </button>
 
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <MapPin className="w-5 h-5 text-primary" aria-hidden />
-          Pantai Depok Bantul
-        </h1>
-        <div className="relative">
-          <input
-            type="search"
-            placeholder="Cari lokasi..."
-            className="w-full bg-white iWWtalic rounded-lg border border-black text-sm py-2 pl-3 pr-10 focus:outline-none"
-          />
-          <button type="button" className="absolute inset-y-0 right-0 flex items-center justify-center w-8 h-full">
-            <Search className="w-4 h-4 text-black" aria-hidden />
-          </button>
+        <div className="space-y-2">
+          <h1 className="text-xl font-bold flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-primary" aria-hidden />
+            {selectedBeachLabel}
+          </h1>
+          <div className="relative">
+            <select
+              value={selectedBeach}
+              onChange={(event) => setSelectedBeach(event.target.value as BeachLocation)}
+              className="w-full bg-white rounded-lg border border-black text-sm py-2 pl-3 pr-3 focus:outline-none"
+              aria-label="Pilih lokasi pantai"
+            >
+              {BEACH_LOCATIONS.map((beach) => (
+                <option key={beach.value} value={beach.value}>
+                  {beach.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+
+        <PushNotificationCard selectedBeach={selectedBeach} />
 
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold flex items-center gap-2">Peringatan Cuaca</h1>
@@ -61,13 +76,14 @@ export function HomePage() {
 
       <div className="space-y-3">
         <h1 className="text-xl font-bold flex items-center gap-2 mt-5">Laporan Nelayan</h1>
-        <FishermanReportList />
+        <FishermanReportList selectedBeach={selectedBeach} />
       </div>
       </div>
 
       <ReportBottomSheet
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
+        beachLocation={selectedBeach}
       />
     </MainLayout>
   )

@@ -20,10 +20,12 @@ const INTENSITY_LABEL: Record<FishermanReport["intensity"], string> = {
 
 export function FishermanReportCard({ report }: FishermanReportCardProps) {
   const progress = INTENSITY_PROGRESS[report.intensity]
-  const tandaDiamati = report.likCodes.map((code) => {
+  const tandaDiamati = (report.likCodes ?? []).map((code) => {
     const option = OBSERVATION_OPTIONS.find((item) => item.value === code)
     return option?.label ?? code
   })
+  const prakiraanItems = report.prakiraan ?? []
+  const rekomendasiItems = report.rekomendasi ?? []
 
   return (
     <article className="bg-white rounded-xl shadow-md p-4">
@@ -38,10 +40,12 @@ export function FishermanReportCard({ report }: FishermanReportCardProps) {
           <h2 className="text-sm font-semibold">Laporan Nelayan {report.lokasi}</h2>
           <p className="text-xs text-gray-500">{report.waktu}</p>
 
-          <div className="mt-3">
-            <p className="text-xs text-gray-500">Gelombang</p>
-            <p className="font-semibold">{report.gelombang}</p>
-          </div>
+          {report.gelombang && (
+            <div className="mt-3">
+              <p className="text-xs text-gray-500">Gelombang</p>
+              <p className="font-semibold">{report.gelombang}</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -70,24 +74,38 @@ export function FishermanReportCard({ report }: FishermanReportCardProps) {
 
       <div className="mt-3">
         <p className="text-sm font-semibold">Tanda yang Diamati</p>
-        <ul className="mt-2 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1 [&>li::marker]:text-primary   ">
-          {tandaDiamati.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        {tandaDiamati.length === 0 ? (
+          <p className="mt-2 text-sm text-gray-500">
+            Belum ada tanda yang tercatat.
+          </p>
+        ) : (
+          <ul className="mt-2 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1 [&>li::marker]:text-primary">
+            {tandaDiamati.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        )}
       </div>
-      <div className="mt-3">
-        <p className="text-sm font-semibold">Prakiraan</p>
-        <p className="mt-2 bg-gray-100 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1">
-            {report.prakiraan}
-        </p>
-      </div>
-    <div className="mt-3">
-        <p className="text-sm font-semibold">Rekomendasi</p>
-        <p className="mt-2 bg-gray-100 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1">
-            {report.rekomendasi}
-        </p>
-    </div>
+      {prakiraanItems.length > 0 && (
+        <div className="mt-3">
+          <p className="text-sm font-semibold">Prakiraan</p>
+          <ul className="mt-2 bg-gray-100 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1">
+            {prakiraanItems.map((item, index) => (
+              <li key={`${item}-${index}`}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {rekomendasiItems.length > 0 && (
+        <div className="mt-3">
+          <p className="text-sm font-semibold">Rekomendasi</p>
+          <ul className="mt-2 bg-gray-100 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1">
+            {rekomendasiItems.map((item, index) => (
+              <li key={`${item}-${index}`}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </article>
   )
 }
