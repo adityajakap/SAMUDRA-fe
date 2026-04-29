@@ -33,6 +33,7 @@ type HistoryItem = {
   beach_location?: string
   input?: {
     beach_location?: string
+    lik_codes?: string[]
   }
 }
 
@@ -129,6 +130,7 @@ precacheAndRoute(self.__WB_MANIFEST)
 import { registerRoute } from 'workbox-routing';
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
+import { OBSERVATION_OPTIONS } from './constants/reportConstants';
 
 // Cache BMKG APIs (Forecast and RSS) - StaleWhileRevalidate
 registerRoute(
@@ -210,8 +212,21 @@ self.addEventListener("push", (event) => {
             const riskLabel = isHighRisk ? "Risiko Tinggi" : "Risiko Rendah"
             const beachLabel = formatBeachLabel(selectedBeach)
 
-            await self.registration.showNotification("Peringatan Tanda Alam Baru", {
-              body: `${beachLabel} - ${riskLabel}`,
+            const likCodes = latest.input?.lik_codes || []
+            const tandaAlamText = likCodes.map(code => {
+              const opt = OBSERVATION_OPTIONS.find(o => o.value.toLowerCase() === code.toLowerCase())
+              return opt ? opt.label : code
+            }).join(', ')
+
+            const title = `${beachLabel} - ${riskLabel}`
+            const rekomendasi = isHighRisk 
+              ? "Tunda aktivitas melaut (untuk rekomendasi saat ini belum ada)"
+              : "Tetap waspada dan berhati-hati (untuk rekomendasi saat ini belum ada)"
+              
+            const body = `Tanda Alam: ${tandaAlamText || 'Tidak ada spesifikasi'}\nAksi Rekomendasi: ${rekomendasi}`
+
+            await self.registration.showNotification(title, {
+              body,
               data: {
                 url: "/",
                 reportId: latest.reportId ?? latest.id,
