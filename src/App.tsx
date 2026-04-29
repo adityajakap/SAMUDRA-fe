@@ -10,6 +10,8 @@ import ProfilePage from "./pages/ProfilePage"
 import HistoryPage from "./pages/HistoryPage"
 import { ProtectedRoute } from "./components/ProtectedRoute"
 
+import { PWABadge } from "./components/PWABadge"
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -38,6 +40,7 @@ export default function App() {
           } 
         />
       </Routes>
+      <PWABadge />
     </BrowserRouter>
   )
 }

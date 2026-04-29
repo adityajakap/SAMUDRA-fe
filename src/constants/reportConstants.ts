@@ -17,6 +17,19 @@ export const OBSERVATION_OPTIONS = [
   { value: "wn-16", label: "Bulan terlihat di antara penjepit bintang Kalajengking" },
   { value: "wn-17", label: "Paus muncul ke permukaan laut dan mengibaskan ekornya" },
   { value: "wn-18", label: "Penyu naik ke permukaan laut dan mengeluarkan suara" },
+  // Ts: Tanda Sinyal / Gempa
+  { value: "ts-1", label: "Air laut sangat tenang (tidak ada pasang atau surut)" },
+  { value: "ts-2", label: "Terdengar suara gemuruh di langit bersamaan dengan terasa guncangan gempa" },
+  { value: "ts-3", label: "Air laut tiba-tiba surut" },
+  { value: "ts-4", label: "Ombak tiba-tiba membesar" },
+  { value: "ts-6", label: "Hewan peliharaan tampak gelisah" },
+  // Cr: Kondisi Kritis / Perubahan Air
+  { value: "cr-1", label: "Banyak sampah atau kayu yang hanyut di laut" },
+  { value: "cr-2", label: "Air laut tiba-tiba berubah menjadi keruh" },
+  { value: "cr-3", label: "Permukaan air terlihat beriak melengkung" },
+  { value: "cr-4", label: "Bintang Tujuh (Pleiades) tenggelam atau tidak terlihat" },
+  // Td: Tanda Alam Lainnya
+  { value: "td-1", label: "Sedang terjadi Bulan Purnama" },
 ] as const
 
 export const INTERACTION_LEVELS = [

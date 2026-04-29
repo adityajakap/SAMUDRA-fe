@@ -122,6 +122,42 @@ const fetchLatestDistributed = async (selectedBeach: string) => {
 cleanupOutdatedCaches()
 precacheAndRoute(self.__WB_MANIFEST)
 
+// ==========================================
+// PWA Runtime Caching Strategies
+// ==========================================
+
+import { registerRoute } from 'workbox-routing';
+import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { ExpirationPlugin } from 'workbox-expiration';
+
+// Cache BMKG APIs (Forecast and RSS) - StaleWhileRevalidate
+registerRoute(
+  ({ url }) => url.href.includes('api.bmkg.go.id') || url.href.includes('data.bmkg.go.id') || url.pathname.startsWith('/bmkg'),
+  new StaleWhileRevalidate({
+    cacheName: 'bmkg-api-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 6 * 60 * 60, // 6 hours
+      }),
+    ],
+  })
+);
+
+// Cache Backend API (History, Alerts) - NetworkFirst
+registerRoute(
+  ({ url }) => url.href.includes('backend.fruz.cloud/api'),
+  new NetworkFirst({
+    cacheName: 'backend-api-cache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 100,
+        maxAgeSeconds: 24 * 60 * 60, // 24 hours
+      }),
+    ],
+  })
+);
+
 self.addEventListener("message", (event) => {
   const data = event.data as { type?: string; value?: string } | null
   if (!data || data.type !== "SET_BEACH_PREFERENCE" || !data.value) return

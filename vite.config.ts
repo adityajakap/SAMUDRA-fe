@@ -6,11 +6,10 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       strategies: "injectManifest",
       srcDir: "src",
       filename: "sw.ts",
-      injectRegister: null,
       includeAssets: ["favicon.svg", "favicon.ico", "robots.txt", "apple-touch-icon.png"],
       manifest: {
         name: "SAMUDRA",
@@ -19,6 +18,8 @@ export default defineConfig({
         theme_color: "#F9F9F9",
         background_color: "#F9F9F9",
         display: "standalone",
+        orientation: "portrait",
+        categories: ["weather", "utilities"],
         start_url: "/",
         icons: [
           {
@@ -38,6 +39,22 @@ export default defineConfig({
             purpose: "any maskable",
           },
         ],
+        shortcuts: [
+          {
+            name: "Lapor Tanda Alam",
+            short_name: "Lapor",
+            description: "Buat laporan tanda alam baru",
+            url: "/report",
+            icons: [{ src: "/192x192.png", sizes: "192x192" }]
+          },
+          {
+            name: "Prakiraan Cuaca",
+            short_name: "Prakiraan",
+            description: "Lihat prakiraan cuaca per jam",
+            url: "/forecast",
+            icons: [{ src: "/192x192.png", sizes: "192x192" }]
+          }
+        ]
       },
     }),
   ],
