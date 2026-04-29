@@ -21,7 +21,9 @@ const INTENSITY_LABEL: Record<FishermanReport["intensity"], string> = {
 export function FishermanReportCard({ report }: FishermanReportCardProps) {
   const progress = INTENSITY_PROGRESS[report.intensity]
   const tandaDiamati = (report.likCodes ?? []).map((code) => {
-    const option = OBSERVATION_OPTIONS.find((item) => item.value === code)
+    const option = OBSERVATION_OPTIONS.find(
+      (item) => item.value.toLowerCase() === code.toLowerCase()
+    )
     return option?.label ?? code
   })
   const prakiraanItems = report.prakiraan ?? []

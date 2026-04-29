@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react"
 import { WEATHER_CONFIG } from "../constants/weatherConfig"
-import { filterTodaySlots, findClosestTimeSlot } from "../utils/weatherUtils"
+import { filterTodaySlots, findClosestTimeSlot, translateWindDirection } from "../utils/weatherUtils"
 
-interface BmkgForecastItem {
+export interface BmkgForecastItem {
   local_datetime: string
   t: number | string
+  hu: number | string
   weather_desc: string
   ws: number | string
   wd: string
+  vs_text: string
 }
 
 interface BmkgForecastResponse {
@@ -21,6 +23,8 @@ export interface TodayForecastData {
   windDirection: string
   condition: string
   temperature: string
+  humidity: string
+  visibility: string
 }
 
 export function useWeatherForecast(adm4Code?: string) {
@@ -73,19 +77,69 @@ export function useWeatherForecast(adm4Code?: string) {
 
         const temp = Number(bestSlot.t)
         const ws = Number(bestSlot.ws)
+        const hu = Number(bestSlot.hu)
 
         setData({
           windSpeed: Number.isFinite(ws) ? `${ws} km/jam` : `${bestSlot.ws} km/jam`,
-          windDirection: bestSlot.wd ? `Arah: ${bestSlot.wd}` : "Arah: -",
+          windDirection: bestSlot.wd ? `Arah: ${translateWindDirection(bestSlot.wd)}` : "Arah: -",
           condition: bestSlot.weather_desc || "Cuaca tidak diketahui",
-          temperature: Number.isFinite(temp)
-            ? `${temp.toFixed(0)}°C`
-            : `${bestSlot.t}°C`,
+          temperature: Number.isFinite(temp) ? `${temp.toFixed(0)}°C` : `${bestSlot.t}°C`,
+          humidity: Number.isFinite(hu) ? `${hu.toFixed(0)}%` : `${bestSlot.hu}%`,
+          visibility: bestSlot.vs_text || "-",
         })
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return
         console.error(err)
         setError("Gagal memuat prakiraan cuaca hari ini.")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchForecast()
+    return () => controller.abort()
+  }, [code])
+
+  return { data, loading, error }
+}
+
+export function useAllWeatherForecasts(adm4Code?: string) {
+  const [data, setData] = useState<BmkgForecastItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const code = adm4Code ?? WEATHER_CONFIG.DEFAULT_ADM4_CODE
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function fetchForecast() {
+      try {
+        setLoading(true)
+        setError(null)
+
+        const res = await fetch(
+          `${WEATHER_CONFIG.BMKG_API_PROXY}?adm4=${code}`,
+          { signal: controller.signal },
+        )
+
+        if (!res.ok) {
+          throw new Error(`Status ${res.status}`)
+        }
+
+        const json = (await res.json()) as BmkgForecastResponse
+        const cuaca = json.data?.[0]?.cuaca
+
+        if (!Array.isArray(cuaca)) {
+          throw new Error("Struktur data BMKG tidak sesuai ekspektasi")
+        }
+
+        const allSlots: BmkgForecastItem[] = cuaca.flat()
+        setData(allSlots)
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return
+        console.error(err)
+        setError("Gagal memuat prakiraan cuaca.")
       } finally {
         setLoading(false)
       }

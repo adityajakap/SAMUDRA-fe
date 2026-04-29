@@ -1,4 +1,4 @@
-import { CloudSun, Droplets, Waves, Wind } from "lucide-react"
+import { CloudSun, Droplets, Thermometer, Wind } from "lucide-react"
 import type { ComponentType } from "react"
 import { useWeatherForecast } from "../hooks/useWeatherForecast"
 
@@ -57,16 +57,19 @@ export function TodayForecast({ adm4Code }: TodayForecastProps) {
         <StatCard
           label="Cuaca"
           value={data.condition}
-          sub={data.temperature}
+          sub={data.visibility !== "-" ? `Jarak pandang: ${data.visibility}` : ""}
           icon={CloudSun}
         />
         <StatCard
-          label="Gelombang"
-          value="–"
-          sub="Data tidak tersedia"
+          label="Suhu Udara"
+          value={data.temperature}
+          icon={Thermometer}
+        />
+        <StatCard
+          label="Kelembapan"
+          value={data.humidity}
           icon={Droplets}
         />
-        <StatCard label="Arus" value="–" sub="Data tidak tersedia" icon={Waves} />
       </div>
     </div>
   )

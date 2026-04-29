@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { RefreshCw } from "lucide-react"
 import type { FishermanReport, IntensityLevel } from "../constants/fishermanReports"
 import { FishermanReportCard } from "./FishermanReportCard"
 import { historyService, type HistoryItem } from "../services/historyService"
@@ -91,8 +92,18 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
     }
     setError(null)
     try {
-      const response = await historyService.getDistributedHistory({ limit: 10 })
-      const mappedReports = response.items.map(mapHistoryItem)
+      const response = await historyService.getDistributedHistory({ limit: 20 })
+      
+      const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      
+      const recentItems = response.items.filter((item) => {
+        if (!item.serverTimestamp) return false;
+        const normalized = item.serverTimestamp < 1e12 ? item.serverTimestamp * 1000 : item.serverTimestamp;
+        return (now - normalized) <= twentyFourHoursMs;
+      });
+
+      const mappedReports = recentItems.map(mapHistoryItem)
       setReports(mappedReports)
       saveCache(mappedReports)
       setIsUsingCache(false)
@@ -119,6 +130,13 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
       setIsLoading(false)
     }
     fetchReports({ silent: Boolean(cached) })
+
+    // Auto-refresh periodically (e.g. every 30 seconds)
+    const intervalId = setInterval(() => {
+      fetchReports({ silent: true })
+    }, 30000)
+
+    return () => clearInterval(intervalId)
   }, [fetchReports])
 
   useEffect(() => {
@@ -138,63 +156,59 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
     )
   }
 
-  if (error && reports.length === 0) {
-    return (
-      <div className="space-y-2">
-        <p className="text-sm text-red-600">{error}</p>
+  return (
+    <div className="space-y-3">
+      {/* Header controls for Refresh */}
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-gray-500">
+          {isLoading ? "Memperbarui data..." : (cachedAt ? `Diperbarui: ${formatTimestamp(cachedAt)}` : "Baru saja diperbarui")}
+        </span>
         <button
           type="button"
           onClick={() => fetchReports()}
-          className="text-sm text-primary hover:underline"
+          disabled={isLoading}
+          className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-indigo-700 disabled:opacity-50 transition-colors"
         >
-          Coba lagi
+          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+          <span>Refresh</span>
         </button>
       </div>
-    )
-  }
 
-  if (reports.length === 0) {
-    return (
-      <p className="text-sm text-gray-500">
-        Belum ada laporan nelayan terbaru.
-      </p>
-    )
-  }
-
-  if (filteredReports.length === 0) {
-    return (
-      <p className="text-sm text-gray-500">
-        Belum ada laporan nelayan untuk lokasi ini.
-      </p>
-    )
-  }
-
-  return (
-    <div className="space-y-2">
-      {isUsingCache && cachedAt && (
-        <p className="text-xs text-gray-500">
-          Menampilkan data tersimpan ({formatTimestamp(cachedAt)})
-        </p>
-      )}
-      {error && (
-        <div className="flex items-center justify-between text-xs text-red-600">
-          <span>{error}</span>
+      {error && reports.length === 0 ? (
+        <div className="space-y-2">
+          <p className="text-sm text-red-600">{error}</p>
           <button
             type="button"
             onClick={() => fetchReports()}
-            className="text-xs text-primary hover:underline"
+            className="text-sm text-primary hover:underline"
           >
             Coba lagi
           </button>
         </div>
-      )}
-      <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-1 md:gap-4 md:overflow-visible">
-        {filteredReports.map((report) => (
-          <div key={report.id} className="min-w-[85%] snap-start sm:min-w-[420px] md:min-w-0">
-            <FishermanReportCard report={report} />
+      ) : reports.length === 0 ? (
+        <p className="text-sm text-gray-500">
+          Belum ada laporan nelayan terbaru.
+        </p>
+      ) : filteredReports.length === 0 ? (
+        <p className="text-sm text-gray-500">
+          Belum ada laporan nelayan untuk lokasi ini.
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {error && (
+            <div className="flex items-center justify-between text-xs text-red-600">
+              <span>{error}</span>
+            </div>
+          )}
+          <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-1 md:gap-4 md:overflow-visible">
+            {filteredReports.map((report) => (
+              <div key={report.id} className="min-w-[85%] snap-start sm:min-w-[420px] md:min-w-0">
+                <FishermanReportCard report={report} />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

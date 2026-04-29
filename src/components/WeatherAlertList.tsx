@@ -3,9 +3,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import WeatherAlertCard from "./WeatherAlertCard"
 import WeatherAlertSkeleton from "./WeatherAlertSkeleton"
 import { useWeatherAlerts } from "../hooks/useWeatherAlerts"
+import type { BeachLocation } from "../types/api"
 
-export function WeatherAlertList() {
-  const { alerts, loading, error } = useWeatherAlerts()
+interface WeatherAlertListProps {
+  selectedBeach?: BeachLocation;
+}
+
+export function WeatherAlertList({ selectedBeach }: WeatherAlertListProps) {
+  const { alerts, loading, error } = useWeatherAlerts(selectedBeach)
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {

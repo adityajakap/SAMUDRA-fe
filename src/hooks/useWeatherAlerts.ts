@@ -8,8 +8,17 @@ import {
   proxifyBmkgUrl,
   extractLocation,
 } from "../utils/weatherUtils"
+import type { BeachLocation } from "../types/api"
 
-export function useWeatherAlerts() {
+const locationKeywords: Record<BeachLocation, string[]> = {
+  pantai_lampuuk: ["Aceh Besar", "Aceh"],
+  pantai_lhoknga: ["Aceh Besar", "Aceh"],
+  pantai_ulee_lheue: ["Banda Aceh", "Aceh"],
+  pantai_depok: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
+  pantai_samas: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
+}
+
+export function useWeatherAlerts(selectedBeach?: BeachLocation) {
   const [alerts, setAlerts] = useState<WeatherAlertProps[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -29,10 +38,18 @@ export function useWeatherAlerts() {
 
         const parser = new DOMParser()
         const rssXml = parser.parseFromString(rssText, "application/xml")
-        const items = Array.from(rssXml.querySelectorAll("item")).slice(
-          0,
-          WEATHER_CONFIG.MAX_ALERTS_TO_FETCH,
-        )
+        const allItems = Array.from(rssXml.querySelectorAll("item"))
+
+        let filteredItems = allItems;
+        if (selectedBeach) {
+          const keywords = locationKeywords[selectedBeach];
+          filteredItems = allItems.filter(item => {
+            const title = item.querySelector("title")?.textContent?.toLowerCase() || "";
+            return keywords.some(kw => title.includes(kw.toLowerCase()));
+          });
+        }
+
+        const items = filteredItems.slice(0, WEATHER_CONFIG.MAX_ALERTS_TO_FETCH)
 
         const mappedAlerts: WeatherAlertProps[] = []
 
@@ -87,7 +104,7 @@ export function useWeatherAlerts() {
 
     fetchAlerts()
     return () => controller.abort()
-  }, [])
+  }, [selectedBeach])
 
   return { alerts, loading, error }
 }

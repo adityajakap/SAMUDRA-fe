@@ -79,3 +79,28 @@ export function filterTodaySlots<T extends { local_datetime: string }>(
       slot.local_datetime.startsWith(todayStr),
   )
 }
+
+export function translateWindDirection(wd: string): string {
+  const map: Record<string, string> = {
+    N: "Utara",
+    NNE: "Utara Timur Laut",
+    NE: "Timur Laut",
+    ENE: "Timur Timur Laut",
+    E: "Timur",
+    ESE: "Timur Tenggara",
+    SE: "Tenggara",
+    SSE: "Selatan Tenggara",
+    S: "Selatan",
+    SSW: "Selatan Barat Daya",
+    SW: "Barat Daya",
+    WSW: "Barat Barat Daya",
+    W: "Barat",
+    WNW: "Barat Barat Laut",
+    NW: "Barat Laut",
+    NNW: "Utara Barat Laut",
+    C: "Tenang",
+    VARIABLE: "Bervariasi",
+  }
+
+  return map[wd.toUpperCase()] || wd
+}

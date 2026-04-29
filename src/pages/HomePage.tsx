@@ -68,10 +68,18 @@ export function HomePage() {
             </span>
           </button>
         </div>
-      <WeatherAlertList />
+      <WeatherAlertList selectedBeach={selectedBeach} />
 
       <div className="space-y-3">
-        <h1 className="text-xl font-bold flex items-center gap-2 mt-5">Prakiraan Hari Ini</h1>
+        <div className="flex items-center justify-between mt-5">
+          <h1 className="text-xl font-bold flex items-center gap-2">Prakiraan Cuaca</h1>
+          <a href="/forecast" className="text-sm text-primary hover:underline font-semibold flex items-center gap-2">
+            Per Jam
+            <span className="w-5 h-5 flex items-center justify-center bg-primary text-white rounded-full">
+              <ArrowRight className="w-3 h-3" aria-hidden strokeWidth={4} />
+            </span>
+          </a>
+        </div>
         <TodayForecast adm4Code={selectedBeachMeta?.adm4Code} />
       </div>
 

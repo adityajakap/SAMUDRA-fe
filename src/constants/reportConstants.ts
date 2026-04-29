@@ -1,5 +1,5 @@
 export const OBSERVATION_OPTIONS = [
-  { value: "wn-1", label: "Awan tampak turun ke bawah memsbentuk gumpalan 3 kali" },
+  { value: "wn-1", label: "Awan tampak turun ke bawah membentuk gumpalan 3 kali" },
   { value: "wn-2", label: "Awan bergumpal dalam beberapa kelompok yang tampak saling mendekat atau menyatu" },
   { value: "wn-3", label: "Kilat muncul di salah satu sisi langit ataupun saling berbalas antara dua sisi" },
   { value: "wn-4", label: "Gelombang laut berubah pola dari kecil dan sering hingga besar dan rapat" },
