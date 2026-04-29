@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/samudra-frontend:latest
+    image: ghcr.io/adityajakap/samudra-fe:latest
     container_name: samudra-frontend
     restart: always
     networks:
