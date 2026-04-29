@@ -82,7 +82,6 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
   const [reports, setReports] = useState<FishermanReport[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isUsingCache, setIsUsingCache] = useState(false)
   const [cachedAt, setCachedAt] = useState<number | null>(null)
   const reportCountRef = useRef(0)
 
@@ -93,10 +92,10 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
     setError(null)
     try {
       const response = await historyService.getDistributedHistory({ limit: 20 })
-      
+
       const twentyFourHoursMs = 24 * 60 * 60 * 1000;
       const now = Date.now();
-      
+
       const recentItems = response.items.filter((item) => {
         if (!item.serverTimestamp) return false;
         const normalized = item.serverTimestamp < 1e12 ? item.serverTimestamp * 1000 : item.serverTimestamp;
@@ -106,13 +105,11 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
       const mappedReports = recentItems.map(mapHistoryItem)
       setReports(mappedReports)
       saveCache(mappedReports)
-      setIsUsingCache(false)
       setCachedAt(Date.now())
     } catch (err) {
       const cached = loadCache()
       if (cached && reportCountRef.current === 0) {
         setReports(cached.reports)
-        setIsUsingCache(true)
         setCachedAt(cached.updatedAt)
       }
       setError(err instanceof Error ? err.message : "Gagal memuat laporan nelayan")
@@ -125,7 +122,6 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
     const cached = loadCache()
     if (cached) {
       setReports(cached.reports)
-      setIsUsingCache(true)
       setCachedAt(cached.updatedAt)
       setIsLoading(false)
     }
