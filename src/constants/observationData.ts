@@ -1,4 +1,10 @@
-import type { IObservation } from '../types/api';
+import type { IObservation, BeachLocation } from '../types/api';
+
+export interface BeachLocationMeta {
+  value: BeachLocation;
+  label: string;
+  adm4Code: string;
+}
 
 export interface Category {
   id: string;
@@ -7,13 +13,36 @@ export interface Category {
   attributeGroups: Record<string, IObservation[]>;
 }
 
-export const BEACH_LOCATIONS = [
-  { value: 'pantai_lampuuk', label: 'Pantai Lampuuk' },
-  { value: 'pantai_lhoknga', label: 'Pantai Lhoknga' },
-  { value: 'pantai_ulee_lheue', label: 'Pantai Ulee Lheue' },
-  { value: 'pantai_depok', label: 'Pantai Depok' },
-  { value: 'pantai_samas', label: 'Pantai Samas' },
+export const BEACH_LOCATIONS: BeachLocationMeta[] = [
+  {
+    value: 'pantai_lampuuk',
+    label: 'Pantai Lampuuk',
+    adm4Code: '11.06.02.2024',
+  },
+  {
+    value: 'pantai_lhoknga',
+    label: 'Pantai Lhoknga',
+    adm4Code: '11.06.02.2001',
+  },
+  {
+    value: 'pantai_ulee_lheue',
+    label: 'Pantai Ulee Lheue',
+    adm4Code: '11.71.03.2002',
+  },
+  {
+    value: 'pantai_depok',
+    label: 'Pantai Depok',
+    adm4Code: '34.02.03.2002',
+  },
+  {
+    value: 'pantai_samas',
+    label: 'Pantai Samas',
+    adm4Code: '34.02.02.2003',
+  },
 ];
+
+export const getBeachMeta = (value: BeachLocation) =>
+  BEACH_LOCATIONS.find((beach) => beach.value === value) ?? null;
 
 // 3-Level Nested Structure: Category → AttributeGroup → Observations
 export const OBSERVATION_DATA: Record<string, Record<string, IObservation[]>> = {

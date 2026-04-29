@@ -6,7 +6,7 @@ import { WeatherAlertList } from "../components/WeatherAlertList"
 import { ReportBottomSheet } from "../components/ReportBottomSheet"
 import { FishermanReportList } from "../components/FishermanReportList"
 import { PushNotificationCard } from "../components/PushNotificationCard"
-import { BEACH_LOCATIONS } from "../constants/observationData"
+import { BEACH_LOCATIONS, getBeachMeta } from "../constants/observationData"
 import type { BeachLocation } from "../types/api"
 
 export function HomePage() {
@@ -15,6 +15,7 @@ export function HomePage() {
   const selectedBeachLabel =
     BEACH_LOCATIONS.find((beach) => beach.value === selectedBeach)?.label ??
     "Pilih Pantai";
+  const selectedBeachMeta = getBeachMeta(selectedBeach)
 
   return (
     <MainLayout>
@@ -71,7 +72,7 @@ export function HomePage() {
 
       <div className="space-y-3">
         <h1 className="text-xl font-bold flex items-center gap-2 mt-5">Prakiraan Hari Ini</h1>
-        <TodayForecast />
+        <TodayForecast adm4Code={selectedBeachMeta?.adm4Code} />
       </div>
 
       <div className="space-y-3">
