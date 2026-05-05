@@ -83,19 +83,21 @@ const HistoryPage = () => {
                       ID: {item.reportId.slice(0, 8)}...
                     </p>
                   </div>
-                  <div className="text-right">
-                    {item.decision.is_high_risk && (
-                      <span className="inline-block px-2 py-1 bg-red-100 text-red-700 text-xs rounded">
-                        Risiko Tinggi
-                      </span>
-                    )}
+                  <div className="text-right flex flex-wrap gap-1 justify-end">
+                    <span className={`inline-block px-2 py-1 text-xs rounded font-semibold ${
+                      item.decision.action === "Actionable"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-green-100 text-green-700"
+                    }`}>
+                      {item.decision.action === "Actionable" ? "Actionable" : "Low"}
+                    </span>
                     {item.decision.is_multisign && (
-                      <span className="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded ml-1">
+                      <span className="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded">
                         Multi-Tanda
                       </span>
                     )}
                     {item.decision.shouldDistribute && (
-                      <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded ml-1">
+                      <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
                         Didistribusikan
                       </span>
                     )}
@@ -117,11 +119,15 @@ const HistoryPage = () => {
                 </div>
 
                 {item.ml && (
-                  <div className="pt-2 border-t border-gray-200">
+                  <div className="pt-2 border-t border-gray-200 space-y-1">
                     <p className="text-xs text-gray-500">
-                      Prediksi ML: {item.ml.is_high_risk ? 'Risiko Tinggi' : 'Risiko Rendah'} 
-                      {item.ml.confidence && ` (${(item.ml.confidence * 100).toFixed(1)}%)`}
+                      Prediksi ML: {item.ml.action === 'Actionable' ? 'Actionable' : 'Low'}
                     </p>
+                    {item.ml.recommendation && (
+                      <p className="text-xs text-gray-600">
+                        Rekomendasi: {item.ml.recommendation}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
