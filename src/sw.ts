@@ -24,11 +24,13 @@ type HistoryItem = {
   serverTimestamp?: number
   decision?: {
     shouldDistribute?: boolean
-    is_high_risk?: boolean
+    action?: string
     is_multisign?: boolean
   }
   ml?: {
-    is_high_risk?: boolean
+    action?: string
+    recommendation?: string
+    description?: string
   }
   beach_location?: string
   input?: {
@@ -41,7 +43,7 @@ const DB_NAME = "samudra-push"
 const STORE_NAME = "preferences"
 const BEACH_KEY = "selectedBeach"
 const LAST_SEEN_PREFIX = "lastSeen:"
-const HISTORY_URL = "https://backend.fruz.cloud/api/history?distribute=true&limit=10"
+const HISTORY_URL = "https://api.samudraapp.com/api/history?distributed=true&limit=10"
 
 const openDb = () =>
   new Promise<IDBDatabase>((resolve, reject) => {
@@ -148,7 +150,7 @@ registerRoute(
 
 // Cache Backend API (History, Alerts) - NetworkFirst
 registerRoute(
-  ({ url }) => url.href.includes('backend.fruz.cloud/api'),
+  ({ url }) => url.href.includes('api.samudraapp.com/api'),
   new NetworkFirst({
     cacheName: 'backend-api-cache',
     plugins: [
@@ -208,8 +210,8 @@ self.addEventListener("push", (event) => {
             const lastSeen = await getLastSeen(selectedBeach)
             if (latestTimestamp <= lastSeen) return
 
-            const isHighRisk = latest.decision?.is_high_risk || latest.ml?.is_high_risk
-            const riskLabel = isHighRisk ? "Risiko Tinggi" : "Risiko Rendah"
+            const isActionable = latest.decision?.action === "Actionable" || latest.ml?.action === "Actionable"
+            const actionLabel = isActionable ? "⚠️ Actionable" : "✅ Low"
             const beachLabel = formatBeachLabel(selectedBeach)
 
             const likCodes = latest.input?.lik_codes || []
@@ -218,12 +220,13 @@ self.addEventListener("push", (event) => {
               return opt ? opt.label : code
             }).join(', ')
 
-            const title = `${beachLabel} - ${riskLabel}`
-            const rekomendasi = isHighRisk 
-              ? "Tunda aktivitas melaut (untuk rekomendasi saat ini belum ada)"
-              : "Tetap waspada dan berhati-hati (untuk rekomendasi saat ini belum ada)"
-              
-            const body = `Tanda Alam: ${tandaAlamText || 'Tidak ada spesifikasi'}\nAksi Rekomendasi: ${rekomendasi}`
+            const recommendation = latest.ml?.recommendation
+              ?? (isActionable
+                ? "Segera hindari area pantai dan berlindung di tempat aman."
+                : "Tetap waspada dan pantau perkembangan cuaca.")
+
+            const title = `${beachLabel} - ${actionLabel}`
+            const body = `Tanda Alam: ${tandaAlamText || 'Tidak ada spesifikasi'}\nRekomendasi: ${recommendation}`
 
             await self.registration.showNotification(title, {
               body,

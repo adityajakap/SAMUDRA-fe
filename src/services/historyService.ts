@@ -1,7 +1,7 @@
 import { authService } from './authService';
 import type { BeachLocation } from '../types/api';
 
-const API_BASE_URL = 'https://backend.fruz.cloud';
+const API_BASE_URL = 'https://api.samudraapp.com';
 
 export interface HistoryItem {
   id: string;
@@ -15,7 +15,7 @@ export interface HistoryItem {
     createdAtClient: number | null;
   };
   decision: {
-    is_high_risk: boolean;
+    action: string;
     is_multisign: boolean;
     shouldDistribute: boolean;
   };
@@ -24,8 +24,13 @@ export interface HistoryItem {
     beach_location?: BeachLocation;
   };
   ml: {
-    is_high_risk: boolean;
-    confidence: number;
+    action: string;
+    recommendation: string;
+    description?: string;
+    detected_signs?: Array<{
+      code: string;
+      description: string;
+    }>;
   };
   reporter?: {
     userId: string;

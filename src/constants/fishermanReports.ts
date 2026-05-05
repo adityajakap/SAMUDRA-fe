@@ -1,6 +1,6 @@
 import type { BeachLocation } from "../types/api"
 
-export type IntensityLevel = "rendah" | "sedang" | "tinggi"
+export type ReportAction = "Low" | "Actionable"
 
 export interface FishermanReport {
   id: string
@@ -8,10 +8,10 @@ export interface FishermanReport {
   lokasi: string
   waktu: string
   gelombang?: string
-  intensity: IntensityLevel
+  action: ReportAction
   likCodes: string[]
-  prakiraan?: string[]
-  rekomendasi?: string[]
+  recommendation?: string
+  mlDescription?: string
 }
 
 export const FISHERMAN_REPORTS: FishermanReport[] = [
@@ -20,27 +20,19 @@ export const FISHERMAN_REPORTS: FishermanReport[] = [
     lokasi: "Pantai Depok",
     waktu: "Hari ini, 07:15",
     gelombang: "1.2 - 1.8 m",
-    intensity: "sedang",
+    action: "Low",
     likCodes: ["wn-2", "wn-4", "wn-6"],
-    prakiraan: [
-      "Hari ini akan terjadi hujan ringan di area pantai",
-    ],
-    rekomendasi: [
-      "Nelayan disarankan untuk tidak berlayar ke laut",
-    ]
+    recommendation: "Kondisi aman, tetap perhatikan perubahan cuaca.",
+    mlDescription: "Tanda alam terdeteksi namun masih dalam batas normal.",
   },
   {
     id: "2",
     lokasi: "Pantai Samas",
     waktu: "Hari ini, 09:40",
     gelombang: "2.0 - 2.6 m",
-    intensity: "tinggi",
+    action: "Actionable",
     likCodes: ["wn-3", "wn-9", "wn-15"],
-    prakiraan: [
-      "Diprediksi akan terjadi hujan lebat disertai angin kencang",
-    ],
-    rekomendasi: [
-      "Segera berlindung di tempat aman dan hindari area pantai",
-    ]
+    recommendation: "Segera berlindung di tempat aman dan hindari area pantai.",
+    mlDescription: "Terdeteksi tanda bahaya cuaca ekstrem. Tindakan segera diperlukan.",
   },
 ]

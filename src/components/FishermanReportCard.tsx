@@ -1,4 +1,4 @@
-import { Waves } from "lucide-react"
+import { Waves, AlertTriangle, CheckCircle } from "lucide-react"
 import type { FishermanReport } from "../constants/fishermanReports"
 import { OBSERVATION_OPTIONS } from "../constants/reportConstants"
 
@@ -6,74 +6,69 @@ interface FishermanReportCardProps {
   report: FishermanReport
 }
 
-const INTENSITY_PROGRESS: Record<FishermanReport["intensity"], number> = {
-  rendah: 33,
-  sedang: 66,
-  tinggi: 100,
-}
-
-const INTENSITY_LABEL: Record<FishermanReport["intensity"], string> = {
-  rendah: "Rendah",
-  sedang: "Sedang",
-  tinggi: "Tinggi",
-}
-
 export function FishermanReportCard({ report }: FishermanReportCardProps) {
-  const progress = INTENSITY_PROGRESS[report.intensity]
+  const isActionable = report.action === "Actionable"
+
   const tandaDiamati = (report.likCodes ?? []).map((code) => {
     const option = OBSERVATION_OPTIONS.find(
       (item) => item.value.toLowerCase() === code.toLowerCase()
     )
     return option?.label ?? code
   })
-  const prakiraanItems = report.prakiraan ?? []
-  const rekomendasiItems = report.rekomendasi ?? []
 
   return (
     <article className="bg-white rounded-xl shadow-md p-4">
+      {/* Header */}
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
-          <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
-            <Waves className="w-5 h-5" aria-hidden />
+          <div
+            className={`w-9 h-9 rounded-full flex items-center justify-center ${
+              isActionable
+                ? "bg-red-100 text-red-600"
+                : "bg-blue-100 text-blue-600"
+            }`}
+          >
+            {isActionable ? (
+              <AlertTriangle className="w-5 h-5" aria-hidden />
+            ) : (
+              <Waves className="w-5 h-5" aria-hidden />
+            )}
           </div>
         </div>
 
-        <div className="flex-1">
-          <h2 className="text-sm font-semibold">Laporan Nelayan {report.lokasi}</h2>
+        <div className="flex-1 min-w-0">
+          <h2 className="text-sm font-semibold truncate">
+            Laporan Nelayan {report.lokasi}
+          </h2>
           <p className="text-xs text-gray-500">{report.waktu}</p>
+        </div>
 
-          {report.gelombang && (
-            <div className="mt-3">
-              <p className="text-xs text-gray-500">Gelombang</p>
-              <p className="font-semibold">{report.gelombang}</p>
-            </div>
+        {/* Action Badge */}
+        <div
+          className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
+            isActionable
+              ? "bg-red-100 text-red-700"
+              : "bg-green-100 text-green-700"
+          }`}
+        >
+          {isActionable ? (
+            <AlertTriangle className="w-3 h-3" aria-hidden />
+          ) : (
+            <CheckCircle className="w-3 h-3" aria-hidden />
           )}
+          {isActionable ? "Actionable" : "Low"}
         </div>
       </div>
 
-      <div className="mt-3">
-        <p className="text-sm font-semibold">Intensitas Rata-rata</p>
-        <div className="mt-2 flex items-center gap-2">
-          <div className="flex-1 h-2 rounded-full bg-gray-200 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-primary"   
-              style={{ width: `${progress}%` }}
-              aria-hidden
-            />
-          </div>
-          <div className={`px-2 py-1 rounded text-xs font-semibold text-white ${
-            report.intensity === "rendah"
-              ? "bg-green-500"
-              : report.intensity === "sedang"
-            ? "bg-yellow-500"
-            : "bg-red-500"
-          }`}>
-            {INTENSITY_LABEL[report.intensity]}
-          </div>
+      {/* Gelombang */}
+      {report.gelombang && (
+        <div className="mt-3 flex items-center gap-2">
+          <p className="text-xs text-gray-500">Gelombang</p>
+          <p className="text-xs font-semibold">{report.gelombang}</p>
         </div>
-     
-      </div>
+      )}
 
+      {/* Tanda yang Diamati */}
       <div className="mt-3">
         <p className="text-sm font-semibold">Tanda yang Diamati</p>
         {tandaDiamati.length === 0 ? (
@@ -88,24 +83,30 @@ export function FishermanReportCard({ report }: FishermanReportCardProps) {
           </ul>
         )}
       </div>
-      {prakiraanItems.length > 0 && (
+
+      {/* ML Description */}
+      {report.mlDescription && (
         <div className="mt-3">
-          <p className="text-sm font-semibold">Prakiraan</p>
-          <ul className="mt-2 bg-gray-100 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1">
-            {prakiraanItems.map((item, index) => (
-              <li key={`${item}-${index}`}>{item}</li>
-            ))}
-          </ul>
+          <p className="text-sm font-semibold">Analisis ML</p>
+          <p className="mt-1 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
+            {report.mlDescription}
+          </p>
         </div>
       )}
-      {rekomendasiItems.length > 0 && (
+
+      {/* Rekomendasi */}
+      {report.recommendation && (
         <div className="mt-3">
           <p className="text-sm font-semibold">Rekomendasi</p>
-          <ul className="mt-2 bg-gray-100 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1">
-            {rekomendasiItems.map((item, index) => (
-              <li key={`${item}-${index}`}>{item}</li>
-            ))}
-          </ul>
+          <div
+            className={`mt-1 p-3 rounded-lg text-sm ${
+              isActionable
+                ? "bg-red-50 text-red-800 border border-red-200"
+                : "bg-green-50 text-green-800 border border-green-200"
+            }`}
+          >
+            {report.recommendation}
+          </div>
         </div>
       )}
     </article>

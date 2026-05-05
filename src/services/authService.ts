@@ -1,6 +1,6 @@
 import type { LoginInput, RegisterInput, PublicUser } from '../types/auth';
 
-const API_BASE_URL = 'https://backend.fruz.cloud';
+const API_BASE_URL = 'https://api.samudraapp.com';
 const TOKEN_KEY = 'auth_token';
 
 export class AuthError extends Error {

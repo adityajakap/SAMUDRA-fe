@@ -1,6 +1,6 @@
 import type { PredictionInput, ReportResponse, HistoryResponse, AckInput } from '../types/api';
 
-const API_BASE_URL = 'https://backend.fruz.cloud';
+const API_BASE_URL = 'https://api.samudraapp.com';
 
 export class ApiError extends Error {
   statusCode?: number;

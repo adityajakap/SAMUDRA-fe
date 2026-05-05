@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { RefreshCw } from "lucide-react"
-import type { FishermanReport, IntensityLevel } from "../constants/fishermanReports"
+import type { FishermanReport, ReportAction } from "../constants/fishermanReports"
 import { FishermanReportCard } from "./FishermanReportCard"
 import { historyService, type HistoryItem } from "../services/historyService"
 import { BEACH_LOCATIONS } from "../constants/observationData"
@@ -56,14 +56,10 @@ const formatTimestamp = (timestamp?: number) => {
   })
 }
 
-const deriveIntensity = (item: HistoryItem): IntensityLevel => {
-  if (item.decision?.is_high_risk || item.ml?.is_high_risk) {
-    return "tinggi"
-  }
-  if (item.decision?.is_multisign) {
-    return "sedang"
-  }
-  return "rendah"
+const deriveAction = (item: HistoryItem): ReportAction => {
+  return item.decision?.action === "Actionable" || item.ml?.action === "Actionable"
+    ? "Actionable"
+    : "Low"
 }
 
 const mapHistoryItem = (item: HistoryItem): FishermanReport => {
@@ -73,8 +69,10 @@ const mapHistoryItem = (item: HistoryItem): FishermanReport => {
     beachValue,
     lokasi: getBeachLabel(beachValue),
     waktu: formatTimestamp(item.serverTimestamp),
-    intensity: deriveIntensity(item),
+    action: deriveAction(item),
     likCodes: item.input?.lik_codes ?? [],
+    recommendation: item.ml?.recommendation,
+    mlDescription: item.ml?.description,
   }
 }
 
