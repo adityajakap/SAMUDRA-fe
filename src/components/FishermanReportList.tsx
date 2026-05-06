@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { RefreshCw } from "lucide-react"
+import { RefreshCw, ShieldAlert } from "lucide-react"
 import type { FishermanReport, ReportAction } from "../constants/fishermanReports"
 import { FishermanReportCard } from "./FishermanReportCard"
 import { historyService, type HistoryItem } from "../services/historyService"
@@ -168,6 +168,7 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
         </button>
       </div>
 
+
       {error && reports.length === 0 ? (
         <div className="space-y-2">
           <p className="text-sm text-red-600">{error}</p>
@@ -180,13 +181,25 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
           </button>
         </div>
       ) : reports.length === 0 ? (
-        <p className="text-sm text-gray-500">
-          Belum ada laporan nelayan terbaru.
-        </p>
+        <div className="flex flex-col items-center gap-3 py-8 text-center">
+          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+            <ShieldAlert className="w-6 h-6 text-green-600" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-700">Tidak ada peringatan aktif</p>
+            <p className="text-xs text-gray-500 mt-1">Kondisi di seluruh pantai saat ini aman.</p>
+          </div>
+        </div>
       ) : filteredReports.length === 0 ? (
-        <p className="text-sm text-gray-500">
-          Belum ada laporan nelayan untuk lokasi ini.
-        </p>
+        <div className="flex flex-col items-center gap-3 py-8 text-center">
+          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+            <ShieldAlert className="w-6 h-6 text-green-600" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-700">Tidak ada peringatan untuk lokasi ini</p>
+            <p className="text-xs text-gray-500 mt-1">Kondisi di pantai ini saat ini aman.</p>
+          </div>
+        </div>
       ) : (
         <div className="space-y-2">
           {error && (
