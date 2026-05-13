@@ -1,4 +1,4 @@
-import { Waves, AlertTriangle, CheckCircle } from "lucide-react"
+import { Waves, AlertTriangle } from "lucide-react"
 import type { FishermanReport } from "../constants/fishermanReports"
 import { OBSERVATION_OPTIONS } from "../constants/reportConstants"
 
@@ -7,7 +7,7 @@ interface FishermanReportCardProps {
 }
 
 export function FishermanReportCard({ report }: FishermanReportCardProps) {
-  const isActionable = report.action === "Actionable"
+  const isActionable = report.isActionable
 
   const tandaDiamati = (report.likCodes ?? []).map((code) => {
     const option = OBSERVATION_OPTIONS.find(
@@ -48,15 +48,15 @@ export function FishermanReportCard({ report }: FishermanReportCardProps) {
           className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
             isActionable
               ? "bg-red-100 text-red-700"
-              : "bg-green-100 text-green-700"
+              : "bg-blue-100 text-blue-700"
           }`}
         >
           {isActionable ? (
             <AlertTriangle className="w-3 h-3" aria-hidden />
           ) : (
-            <CheckCircle className="w-3 h-3" aria-hidden />
+            <Waves className="w-3 h-3" aria-hidden />
           )}
-          {isActionable ? "Actionable" : "Low"}
+          {isActionable ? "Perlu Tindakan" : "Minim Tindakan"}
         </div>
       </div>
 
@@ -84,28 +84,19 @@ export function FishermanReportCard({ report }: FishermanReportCardProps) {
         )}
       </div>
 
-      {/* ML Description */}
-      {report.mlDescription && (
-        <div className="mt-3">
-          <p className="text-sm font-semibold">Analisis ML</p>
-          <p className="mt-1 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
-            {report.mlDescription}
-          </p>
-        </div>
-      )}
 
-      {/* Rekomendasi */}
-      {report.recommendation && (
+      {/* Rekomendasi Aksi */}
+      {report.actionRecommendation && (
         <div className="mt-3">
-          <p className="text-sm font-semibold">Rekomendasi</p>
+          <p className="text-sm font-semibold">Rekomendasi Aksi</p>
           <div
             className={`mt-1 p-3 rounded-lg text-sm ${
               isActionable
                 ? "bg-red-50 text-red-800 border border-red-200"
-                : "bg-green-50 text-green-800 border border-green-200"
+                : "bg-blue-50 text-blue-800 border border-blue-200"
             }`}
           >
-            {report.recommendation}
+            {report.actionRecommendation}
           </div>
         </div>
       )}

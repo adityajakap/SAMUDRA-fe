@@ -7,11 +7,11 @@ export function PWABadge() {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegistered(r) {
-      console.log('SW Registered:', r)
+    onRegistered(_r) {
+      // SW registered
     },
-    onRegisterError(error) {
-      console.log('SW registration error', error)
+    onRegisterError(_error) {
+      // SW registration error
     },
   })
 

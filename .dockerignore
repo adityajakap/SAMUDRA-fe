@@ -3,6 +3,11 @@ dist
 .git
 .github
 .env
+.env.*
 .vscode
 *.log
 README.md
+AUTH_INTEGRATION.md
+DEPLOYMENT_GUIDE.md
+REKONSILIASI_REKOMENDASI.md
+docker-compose.yml

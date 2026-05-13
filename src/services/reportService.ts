@@ -1,4 +1,4 @@
-import type { PredictionInput, ReportResponse, HistoryResponse, AckInput } from '../types/api';
+import type { PredictionInput, ReportResponse, HistoryResponse, AckInput, ActiveReportResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.samudraapp.com';
 
@@ -58,6 +58,14 @@ export const reportService = {
     });
 
     return handleResponse<HistoryResponse>(response);
+  },
+
+  async getActiveReports(beachLocation: string): Promise<ActiveReportResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/reports/active?beach_location=${encodeURIComponent(beachLocation)}`, {
+      method: 'GET',
+    });
+
+    return handleResponse<ActiveReportResponse>(response);
   },
 
   async sendAck(data: AckInput): Promise<void> {

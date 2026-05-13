@@ -64,3 +64,35 @@ export interface PushSubscription {
     auth: string;
   };
 }
+
+// Active Report Types
+export interface ActiveWarningEvent {
+  decision: {
+    is_actionable: boolean;
+    community_characteristics?: string;
+  };
+  ml: {
+    action_recommendation?: string;
+    active_warning?: string[];
+  };
+  input: {
+    lik_codes: string[];
+    beach_location: BeachLocation;
+  };
+}
+
+export interface ActiveWarning {
+  codes: string[];
+  triggeredAt: number;
+  alertId: string;
+  alertEvent: ActiveWarningEvent;
+}
+
+export interface ActiveReportResponse {
+  ok: boolean;
+  beach_location: BeachLocation;
+  window_ms: number;
+  threshold: number;
+  counts: Record<string, { count: number; triggered: boolean }>;
+  active_warning?: ActiveWarning;
+}

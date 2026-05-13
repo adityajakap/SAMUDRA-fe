@@ -1,53 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { RefreshCw, ShieldAlert } from "lucide-react"
-import type { FishermanReport, ReportAction } from "../constants/fishermanReports"
-import { FishermanReportCard } from "./FishermanReportCard"
-import { historyService, type HistoryItem } from "../services/historyService"
+import { useCallback, useEffect, useState } from "react"
+import { RefreshCw, AlertTriangle, Waves, ShieldAlert } from "lucide-react"
+import { reportService } from "../services/reportService"
 import { BEACH_LOCATIONS } from "../constants/observationData"
-import type { BeachLocation } from "../types/api"
+import type { BeachLocation, ActiveReportResponse } from "../types/api"
+import { OBSERVATION_OPTIONS } from "../constants/reportConstants"
 
 interface FishermanReportListProps {
   selectedBeach: BeachLocation
 }
 
-const CACHE_KEY = "fishermanReportsCache.v1"
-
-type ReportsCache = {
-  updatedAt: number
-  reports: FishermanReport[]
-}
-
-const loadCache = (): ReportsCache | null => {
-  if (typeof window === "undefined") return null
-  try {
-    const raw = window.localStorage.getItem(CACHE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw) as ReportsCache
-    if (!Array.isArray(parsed.reports)) return null
-    return parsed
-  } catch {
-    return null
-  }
-}
-
-const saveCache = (reports: FishermanReport[]) => {
-  if (typeof window === "undefined") return
-  const payload: ReportsCache = {
-    updatedAt: Date.now(),
-    reports,
-  }
-  window.localStorage.setItem(CACHE_KEY, JSON.stringify(payload))
-}
-
-const getBeachLabel = (value?: BeachLocation) => {
-  if (!value) return "Lokasi tidak diketahui"
-  return BEACH_LOCATIONS.find((beach) => beach.value === value)?.label ?? "Lokasi tidak diketahui"
-}
-
+// Helper to format timestamp
 const formatTimestamp = (timestamp?: number) => {
   if (!timestamp) return "-"
-  const normalized = timestamp < 1e12 ? timestamp * 1000 : timestamp
-  return new Date(normalized).toLocaleString("id-ID", {
+  return new Date(timestamp).toLocaleString("id-ID", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -56,99 +21,62 @@ const formatTimestamp = (timestamp?: number) => {
   })
 }
 
-const deriveAction = (item: HistoryItem): ReportAction => {
-  return item.decision?.action === "Actionable" || item.ml?.action === "Actionable"
-    ? "Actionable"
-    : "Low"
-}
-
-const mapHistoryItem = (item: HistoryItem): FishermanReport => {
-  const beachValue = item.beach_location ?? item.input?.beach_location
-  return {
-    id: item.reportId ?? item.id,
-    beachValue,
-    lokasi: getBeachLabel(beachValue),
-    waktu: formatTimestamp(item.serverTimestamp),
-    action: deriveAction(item),
-    likCodes: item.input?.lik_codes ?? [],
-    recommendation: item.ml?.recommendation,
-    mlDescription: item.ml?.description,
-  }
-}
-
 export function FishermanReportList({ selectedBeach }: FishermanReportListProps) {
-  const [reports, setReports] = useState<FishermanReport[]>([])
+  const [activeReport, setActiveReport] = useState<ActiveReportResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [cachedAt, setCachedAt] = useState<number | null>(null)
-  const reportCountRef = useRef(0)
 
-  const fetchReports = useCallback(async (options?: { silent?: boolean }) => {
+  const fetchActiveReport = useCallback(async (options?: { silent?: boolean }) => {
     if (!options?.silent) {
       setIsLoading(true)
     }
     setError(null)
     try {
-      const response = await historyService.getDistributedHistory({ limit: 20 })
-
-      const twentyFourHoursMs = 24 * 60 * 60 * 1000;
-      const now = Date.now();
-
-      const recentItems = response.items.filter((item) => {
-        if (!item.serverTimestamp) return false;
-        const normalized = item.serverTimestamp < 1e12 ? item.serverTimestamp * 1000 : item.serverTimestamp;
-        return (now - normalized) <= twentyFourHoursMs;
-      });
-
-      const mappedReports = recentItems.map(mapHistoryItem)
-      setReports(mappedReports)
-      saveCache(mappedReports)
+      const response = await reportService.getActiveReports(selectedBeach)
+      setActiveReport(response)
       setCachedAt(Date.now())
     } catch (err) {
-      const cached = loadCache()
-      if (cached && reportCountRef.current === 0) {
-        setReports(cached.reports)
-        setCachedAt(cached.updatedAt)
-      }
-      setError(err instanceof Error ? err.message : "Gagal memuat laporan nelayan")
+      setError(err instanceof Error ? err.message : "Gagal memuat status komunitas")
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [selectedBeach])
 
   useEffect(() => {
-    const cached = loadCache()
-    if (cached) {
-      setReports(cached.reports)
-      setCachedAt(cached.updatedAt)
-      setIsLoading(false)
-    }
-    fetchReports({ silent: Boolean(cached) })
-
-    // Auto-refresh periodically (e.g. every 30 seconds)
+    fetchActiveReport()
     const intervalId = setInterval(() => {
-      fetchReports({ silent: true })
+      fetchActiveReport({ silent: true })
     }, 30000)
-
     return () => clearInterval(intervalId)
-  }, [fetchReports])
+  }, [fetchActiveReport])
 
-  useEffect(() => {
-    reportCountRef.current = reports.length
-  }, [reports.length])
-
-  const filteredReports = useMemo(
-    () => reports.filter((report) => report.beachValue === selectedBeach),
-    [reports, selectedBeach]
-  )
-
-  if (isLoading && reports.length === 0) {
-    return (
-      <p className="text-sm text-gray-500">
-        Memuat laporan nelayan...
-      </p>
-    )
+  if (isLoading && !activeReport && !error) {
+    return <p className="text-sm text-gray-500">Memuat status komunitas...</p>
   }
+
+  // Safe optional chaining to prevent crashes
+  const isActionable = activeReport?.active_warning?.alertEvent?.decision?.is_actionable ?? false;
+  const actionRecommendation = activeReport?.active_warning?.alertEvent?.ml?.action_recommendation;
+
+  const hasWarning = activeReport?.active_warning != null;
+  const counts = activeReport?.counts ?? {}
+  // Kembalikan filter ke count > 0 agar semua tanda terlihat JIKA card ditampilkan
+  const reportedCodes = Object.keys(counts).filter(code => counts[code].count > 0)
+
+  const windowMinutes = Math.round((activeReport?.window_ms ?? 600000) / 60000)
+
+  // Mapping codes to labels with counts
+  const tandaDenganCount = reportedCodes.map(code => {
+    const option = OBSERVATION_OPTIONS.find(
+      (item) => item.value.toLowerCase() === code.toLowerCase()
+    )
+    return {
+      label: option?.label ?? code,
+      count: counts[code].count,
+      triggered: counts[code].triggered
+    }
+  })
 
   return (
     <div className="space-y-3">
@@ -159,7 +87,7 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
         </span>
         <button
           type="button"
-          onClick={() => fetchReports()}
+          onClick={() => fetchActiveReport()}
           disabled={isLoading}
           className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-indigo-700 disabled:opacity-50 transition-colors"
         >
@@ -168,53 +96,105 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
         </button>
       </div>
 
-
-      {error && reports.length === 0 ? (
+      {error && !activeReport ? (
         <div className="space-y-2">
           <p className="text-sm text-red-600">{error}</p>
           <button
             type="button"
-            onClick={() => fetchReports()}
+            onClick={() => fetchActiveReport()}
             className="text-sm text-primary hover:underline"
           >
             Coba lagi
           </button>
         </div>
-      ) : reports.length === 0 ? (
+      ) : (!hasWarning || tandaDenganCount.length === 0) ? (
         <div className="flex flex-col items-center gap-3 py-8 text-center">
           <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
             <ShieldAlert className="w-6 h-6 text-green-600" />
           </div>
           <div>
             <p className="text-sm font-medium text-gray-700">Tidak ada peringatan aktif</p>
-            <p className="text-xs text-gray-500 mt-1">Kondisi di seluruh pantai saat ini aman.</p>
-          </div>
-        </div>
-      ) : filteredReports.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-8 text-center">
-          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-            <ShieldAlert className="w-6 h-6 text-green-600" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-700">Tidak ada peringatan untuk lokasi ini</p>
-            <p className="text-xs text-gray-500 mt-1">Kondisi di pantai ini saat ini aman.</p>
+            <p className="text-xs text-gray-500 mt-1">Kondisi di lokasi ini saat ini aman.</p>
           </div>
         </div>
       ) : (
-        <div className="space-y-2">
-          {error && (
-            <div className="flex items-center justify-between text-xs text-red-600">
-              <span>{error}</span>
+        <article className="bg-white rounded-xl shadow-md p-4">
+          {/* Header */}
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center ${isActionable
+                    ? "bg-red-100 text-red-600"
+                    : "bg-blue-100 text-blue-600"
+                  }`}
+              >
+                {isActionable ? (
+                  <AlertTriangle className="w-5 h-5" aria-hidden />
+                ) : (
+                  <Waves className="w-5 h-5" aria-hidden />
+                )}
+              </div>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <h2 className="text-sm font-semibold truncate">
+                Status {BEACH_LOCATIONS.find(b => b.value === selectedBeach)?.label ?? selectedBeach}
+              </h2>
+              <p className="text-xs text-gray-500">
+                {windowMinutes} Menit Terakhir
+              </p>
+            </div>
+
+            {/* Action Badge */}
+            <div
+              className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${isActionable
+                  ? "bg-red-100 text-red-700"
+                  : "bg-blue-100 text-blue-700"
+                }`}
+            >
+              {isActionable ? (
+                <AlertTriangle className="w-3 h-3" aria-hidden />
+              ) : (
+                <Waves className="w-3 h-3" aria-hidden />
+              )}
+              {isActionable ? "Perlu Tindakan" : "Minim Tindakan"}
+            </div>
+          </div>
+
+          {/* Tanda yang Diamati (Counts) */}
+          <div className="mt-3">
+            <p className="text-sm font-semibold">Tanda yang Diamati</p>
+            {tandaDenganCount.length === 0 ? (
+              <p className="mt-2 text-sm text-gray-500">
+                Belum ada tanda yang tercatat.
+              </p>
+            ) : (
+              <ul className="mt-2 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1 [&>li::marker]:text-primary bg-gray-50 border border-gray-100">
+                {tandaDenganCount.map((item, idx) => (
+                  <li key={idx}>
+                    <span className={item.triggered ? "font-semibold text-red-600" : ""}>{item.label}</span>
+                    <span className="text-gray-500 ml-1">({item.count} laporan)</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Rekomendasi Aksi */}
+          {actionRecommendation && (
+            <div className="mt-3">
+              <p className="text-sm font-semibold">Rekomendasi Aksi</p>
+              <div
+                className={`mt-1 p-3 rounded-lg text-sm ${isActionable
+                    ? "bg-red-50 text-red-800 border border-red-200"
+                    : "bg-blue-50 text-blue-800 border border-blue-200"
+                  }`}
+              >
+                {actionRecommendation}
+              </div>
             </div>
           )}
-          <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory md:grid md:grid-cols-1 md:gap-4 md:overflow-visible">
-            {filteredReports.map((report) => (
-              <div key={report.id} className="min-w-[85%] snap-start sm:min-w-[420px] md:min-w-0">
-                <FishermanReportCard report={report} />
-              </div>
-            ))}
-          </div>
-        </div>
+        </article>
       )}
     </div>
   )

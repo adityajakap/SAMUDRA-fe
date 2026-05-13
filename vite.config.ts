@@ -10,7 +10,7 @@ export default defineConfig({
       strategies: "injectManifest",
       srcDir: "src",
       filename: "sw.ts",
-      includeAssets: ["favicon.svg", "favicon.ico", "robots.txt", "apple-touch-icon.png"],
+      includeAssets: ["favicon.ico", "robots.txt", "192x192.png"],
       manifest: {
         name: "SAMUDRA",
         short_name: "SAMUDRA",

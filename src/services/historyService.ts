@@ -15,17 +15,20 @@ export interface HistoryItem {
     createdAtClient: number | null;
   };
   decision: {
-    action: string;
-    is_multisign: boolean;
-    shouldDistribute: boolean;
+    is_actionable: boolean;
+    action?: string;
+    is_multisign?: boolean;
+    shouldDistribute?: boolean;
   };
   input: {
     lik_codes: string[];
     beach_location?: BeachLocation;
   };
   ml: {
-    action: string;
-    recommendation: string;
+    sign_description?: string;
+    action_recommendation?: string;
+    action?: string;
+    recommendation?: string;
     description?: string;
     detected_signs?: Array<{
       code: string;
