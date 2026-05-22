@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { API_BASE_URL } from '../constants/reportConstants'
-import { authService } from '../services/authService'
 
 interface ReportFormData {
   levelOfInteraction: number
@@ -61,13 +60,9 @@ export function useReportForm(): UseReportFormReturn {
         createdAtClient: Date.now(),
       }
 
-      const token = authService.getToken();
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
 
       const response = await fetch(`${API_BASE_URL}/api/report`, {
         method: 'POST',

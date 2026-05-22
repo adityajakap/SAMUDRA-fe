@@ -1,8 +1,20 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react-swc"
 import { VitePWA } from "vite-plugin-pwa"
 
 export default defineConfig({
+  test: {
+    globals: true,
+    environment: "happy-dom",
+    setupFiles: ["./src/test/setup.ts"],
+    include: ["src/**/__tests__/**/*.{test,spec}.{ts,tsx}"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "html"],
+      include: ["src/utils/**", "src/services/**", "src/hooks/**", "src/contexts/**"],
+    },
+  },
   plugins: [
     react(),
     VitePWA({

@@ -61,12 +61,6 @@ export function HomePage() {
 
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold flex items-center gap-2">Peringatan Cuaca</h1>
-          <button type="button" className="text-sm text-primary hover:underline font-semibold flex items-center gap-2">
-            Selengkapnya
-            <span className="w-5 h-5 flex items-center justify-center bg-primary text-white rounded-full">
-              <ArrowRight className="w-3 h-3" aria-hidden strokeWidth={4} />
-            </span>
-          </button>
         </div>
         <WeatherAlertList selectedBeach={selectedBeach} />
 

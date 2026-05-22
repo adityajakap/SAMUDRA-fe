@@ -41,13 +41,14 @@ export function useWeatherAlerts(selectedBeach?: BeachLocation) {
         const allItems = Array.from(rssXml.querySelectorAll("item"))
 
         let filteredItems = allItems;
-        if (selectedBeach) {
-          const keywords = locationKeywords[selectedBeach];
-          filteredItems = allItems.filter(item => {
-            const title = item.querySelector("title")?.textContent?.toLowerCase() || "";
-            return keywords.some(kw => title.includes(kw.toLowerCase()));
-          });
-        }
+        // DEVELOPMENT MODE: Tampilkan semua peringatan tanpa filter lokasi
+        // if (selectedBeach) {
+        //   const keywords = locationKeywords[selectedBeach];
+        //   filteredItems = allItems.filter(item => {
+        //     const title = item.querySelector("title")?.textContent?.toLowerCase() || "";
+        //     return keywords.some(kw => title.includes(kw.toLowerCase()));
+        //   });
+        // }
 
         const items = filteredItems.slice(0, WEATHER_CONFIG.MAX_ALERTS_TO_FETCH)
 

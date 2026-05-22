@@ -115,9 +115,7 @@ export const ReportBottomSheet = ({ isOpen, onClose, beachLocation }: ReportBott
       }, 2500);
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.statusCode === 401) {
-          setError('Anda harus login terlebih dahulu');
-        } else if (err.statusCode === 400) {
+        if (err.statusCode === 400) {
           setStep('success');
           setTimeout(() => {
             handleClose();
