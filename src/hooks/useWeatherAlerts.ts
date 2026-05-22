@@ -10,13 +10,13 @@ import {
 } from "../utils/weatherUtils"
 import type { BeachLocation } from "../types/api"
 
-const locationKeywords: Record<BeachLocation, string[]> = {
-  pantai_lampuuk: ["Aceh Besar", "Aceh"],
-  pantai_lhoknga: ["Aceh Besar", "Aceh"],
-  pantai_ulee_lheue: ["Banda Aceh", "Aceh"],
-  pantai_depok: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
-  pantai_samas: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
-}
+// const locationKeywords: Record<BeachLocation, string[]> = {
+//   pantai_lampuuk: ["Aceh Besar", "Aceh"],
+//   pantai_lhoknga: ["Aceh Besar", "Aceh"],
+//   pantai_ulee_lheue: ["Banda Aceh", "Aceh"],
+//   pantai_depok: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
+//   pantai_samas: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
+// }
 
 export function useWeatherAlerts(selectedBeach?: BeachLocation) {
   const [alerts, setAlerts] = useState<WeatherAlertProps[]>([])

@@ -18,10 +18,10 @@ Object.defineProperty(window, 'localStorage', {
 })
 
 // ── fetch mock ───────────────────────────────────────────────────────────────
-global.fetch = vi.fn()
+globalThis.fetch = vi.fn()
 
 // ── crypto.randomUUID mock ───────────────────────────────────────────────────
-Object.defineProperty(global, 'crypto', {
+Object.defineProperty(globalThis, 'crypto', {
   value: {
     randomUUID: () => 'test-uuid-1234',
   },
@@ -29,7 +29,7 @@ Object.defineProperty(global, 'crypto', {
 })
 
 // ── Notification mock ────────────────────────────────────────────────────────
-Object.defineProperty(global, 'Notification', {
+Object.defineProperty(globalThis, 'Notification', {
   value: {
     permission: 'default' as NotificationPermission,
     requestPermission: vi.fn().mockResolvedValue('granted'),
@@ -38,7 +38,7 @@ Object.defineProperty(global, 'Notification', {
 })
 
 // ── alert mock ───────────────────────────────────────────────────────────────
-global.alert = vi.fn()
+globalThis.alert = vi.fn()
 
 // ── Reset mocks between tests ────────────────────────────────────────────────
 beforeEach(() => {

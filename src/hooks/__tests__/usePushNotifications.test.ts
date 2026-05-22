@@ -90,8 +90,8 @@ describe('usePushNotifications', () => {
     vi.mocked(pushService.subscribe).mockResolvedValue(undefined)
 
     // Ensure Notification.permission is 'default' so requestPermission is called
-    Object.defineProperty(global.Notification, 'permission', { value: 'default', writable: true })
-    vi.mocked(global.Notification.requestPermission).mockResolvedValue('granted')
+    Object.defineProperty(globalThis.Notification, 'permission', { value: 'default', writable: true })
+    vi.mocked(globalThis.Notification.requestPermission).mockResolvedValue('granted')
 
     const { result } = renderHook(() => usePushNotifications())
     await waitFor(() => expect(result.current.isLoading).toBe(false))
@@ -108,7 +108,7 @@ describe('usePushNotifications', () => {
   })
 
   it('subscribe sets error when permission is denied', async () => {
-    vi.mocked(global.Notification.requestPermission).mockResolvedValue('denied')
+    vi.mocked(globalThis.Notification.requestPermission).mockResolvedValue('denied')
 
     const { result } = renderHook(() => usePushNotifications())
     await waitFor(() => expect(result.current.isLoading).toBe(false))
@@ -122,7 +122,7 @@ describe('usePushNotifications', () => {
   })
 
   it('subscribe sets error when getVapidPublicKey throws', async () => {
-    vi.mocked(global.Notification.requestPermission).mockResolvedValue('granted')
+    vi.mocked(globalThis.Notification.requestPermission).mockResolvedValue('granted')
     vi.mocked(pushService.getVapidPublicKey).mockRejectedValue(new Error('VAPID error'))
 
     const { result } = renderHook(() => usePushNotifications())

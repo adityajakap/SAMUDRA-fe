@@ -142,7 +142,7 @@ describe('useReportForm', () => {
         act(() => result.current.submitReport()),
       ).rejects.toThrow('No observations selected')
 
-      expect(global.alert).toHaveBeenCalledWith('Silakan pilih minimal satu objek pengamatan')
+      expect(globalThis.alert).toHaveBeenCalledWith('Silakan pilih minimal satu objek pengamatan')
     })
 
     it('sets isSubmitting to true during submission and false after', async () => {
@@ -199,7 +199,7 @@ describe('useReportForm', () => {
         await result.current.submitReport()
       })
 
-      expect(global.alert).toHaveBeenCalledWith('Laporan berhasil dikirim!')
+      expect(globalThis.alert).toHaveBeenCalledWith('Laporan berhasil dikirim!')
       expect(result.current.formData.age).toBe(0)
       expect(result.current.selectedObservations).toEqual([])
     })
@@ -217,7 +217,7 @@ describe('useReportForm', () => {
         act(() => result.current.submitReport()),
       ).rejects.toThrow()
 
-      expect(global.alert).toHaveBeenCalledWith('Gagal mengirim laporan. Silakan coba lagi.')
+      expect(globalThis.alert).toHaveBeenCalledWith('Gagal mengirim laporan. Silakan coba lagi.')
     })
 
     it('sets isSubmitting to false even after an error', async () => {
