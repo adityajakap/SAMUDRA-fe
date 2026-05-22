@@ -12,6 +12,14 @@ import type { BeachLocation } from "../types/api"
 export function HomePage() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [selectedBeach, setSelectedBeach] = useState<BeachLocation>("pantai_depok");
+  const [disableFilter, setDisableFilter] = useState(() => {
+    return localStorage.getItem("dev_disable_filter") === "true";
+  });
+
+  const handleToggleFilter = (checked: boolean) => {
+    setDisableFilter(checked);
+    localStorage.setItem("dev_disable_filter", checked.toString());
+  };
   const selectedBeachLabel =
     BEACH_LOCATIONS.find((beach) => beach.value === selectedBeach)?.label ??
     "Pilih Pantai";
@@ -61,8 +69,19 @@ export function HomePage() {
 
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold flex items-center gap-2">Peringatan Cuaca</h1>
+          {import.meta.env.DEV && (
+            <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={disableFilter} 
+                onChange={(e) => handleToggleFilter(e.target.checked)} 
+                className="rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              Semua Lokasi
+            </label>
+          )}
         </div>
-        <WeatherAlertList selectedBeach={selectedBeach} />
+        <WeatherAlertList selectedBeach={selectedBeach} disableFilter={disableFilter} />
 
         <div className="space-y-3">
           <div className="flex items-center justify-between mt-5">

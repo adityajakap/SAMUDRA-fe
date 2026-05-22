@@ -10,15 +10,15 @@ import {
 } from "../utils/weatherUtils"
 import type { BeachLocation } from "../types/api"
 
-// const locationKeywords: Record<BeachLocation, string[]> = {
-//   pantai_lampuuk: ["Aceh Besar", "Aceh"],
-//   pantai_lhoknga: ["Aceh Besar", "Aceh"],
-//   pantai_ulee_lheue: ["Banda Aceh", "Aceh"],
-//   pantai_depok: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
-//   pantai_samas: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
-// }
+const locationKeywords: Record<BeachLocation, string[]> = {
+  pantai_lampuuk: ["Aceh Besar", "Aceh"],
+  pantai_lhoknga: ["Aceh Besar", "Aceh"],
+  pantai_ulee_lheue: ["Banda Aceh", "Aceh"],
+  pantai_depok: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
+  pantai_samas: ["Bantul", "DI Yogyakarta", "Yogyakarta", "DIY"],
+}
 
-export function useWeatherAlerts(selectedBeach?: BeachLocation) {
+export function useWeatherAlerts(selectedBeach?: BeachLocation, disableFilter: boolean = false) {
   const [alerts, setAlerts] = useState<WeatherAlertProps[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -41,14 +41,13 @@ export function useWeatherAlerts(selectedBeach?: BeachLocation) {
         const allItems = Array.from(rssXml.querySelectorAll("item"))
 
         let filteredItems = allItems;
-        // DEVELOPMENT MODE: Tampilkan semua peringatan tanpa filter lokasi
-        // if (selectedBeach) {
-        //   const keywords = locationKeywords[selectedBeach];
-        //   filteredItems = allItems.filter(item => {
-        //     const title = item.querySelector("title")?.textContent?.toLowerCase() || "";
-        //     return keywords.some(kw => title.includes(kw.toLowerCase()));
-        //   });
-        // }
+        if (selectedBeach && !disableFilter) {
+          const keywords = locationKeywords[selectedBeach];
+          filteredItems = allItems.filter(item => {
+            const title = item.querySelector("title")?.textContent?.toLowerCase() || "";
+            return keywords.some(kw => title.includes(kw.toLowerCase()));
+          });
+        }
 
         const items = filteredItems.slice(0, WEATHER_CONFIG.MAX_ALERTS_TO_FETCH)
 
@@ -82,7 +81,7 @@ export function useWeatherAlerts(selectedBeach?: BeachLocation) {
           const description =
             info?.getElementsByTagNameNS("*", "description")[0]?.textContent ?? ""
 
-          mappedAlerts.push({
+          const mappedAlert = {
             location: extractLocation(headline, title),
             date: formatDateToID(effective || pubDate),
             start: formatTimeWIB(effective),
@@ -90,7 +89,38 @@ export function useWeatherAlerts(selectedBeach?: BeachLocation) {
             condition: event || "Peringatan Cuaca",
             forecast: description || "Peringatan dini cuaca dari BMKG.",
             recommendation: buildRecommendation(event, description),
-          })
+          }
+          
+          mappedAlerts.push(mappedAlert)
+
+          // Notification Logic
+          const alertId = `${mappedAlert.location}-${mappedAlert.start}-${mappedAlert.end}`
+          const seenStr = localStorage.getItem("notified_weather_alerts") || "[]"
+          let seen: string[] = []
+          try {
+            seen = JSON.parse(seenStr)
+          } catch {
+            seen = []
+          }
+
+          if (!seen.includes(alertId)) {
+            seen.push(alertId)
+            if (seen.length > 20) seen.shift()
+            localStorage.setItem("notified_weather_alerts", JSON.stringify(seen))
+
+            if ("serviceWorker" in navigator) {
+              if (Notification.permission === "granted") {
+                navigator.serviceWorker.ready.then((registration) => {
+                  registration.showNotification(`Peringatan BMKG: ${mappedAlert.location}`, {
+                    body: `${mappedAlert.condition} akan terjadi pada ${mappedAlert.date}, ${mappedAlert.start}\n\n${mappedAlert.recommendation}`,
+                    tag: alertId,
+                    data: { url: "/" },
+                    icon: "/192x192.png",
+                  }).catch(console.error)
+                }).catch(console.error)
+              }
+            }
+          }
         }
 
         setAlerts(mappedAlerts)
@@ -105,7 +135,7 @@ export function useWeatherAlerts(selectedBeach?: BeachLocation) {
 
     fetchAlerts()
     return () => controller.abort()
-  }, [selectedBeach])
+  }, [selectedBeach, disableFilter])
 
   return { alerts, loading, error }
 }

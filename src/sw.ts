@@ -163,7 +163,7 @@ registerRoute(
 );
 
 self.addEventListener("message", (event) => {
-  const data = event.data as { type?: string; value?: string } | null
+  const data = event.data as { type?: string; value?: string; payload?: unknown } | null
   if (!data) return
 
   if (data.type === "SKIP_WAITING") {
@@ -173,6 +173,20 @@ self.addEventListener("message", (event) => {
 
   if (data.type === "SET_BEACH_PREFERENCE" && data.value) {
     event.waitUntil(setPreference(BEACH_KEY, data.value))
+    return
+  }
+
+  if (data.type === "SHOW_WEATHER_ALERT" && data.payload) {
+    const p = data.payload as PushPayload
+    event.waitUntil(
+      self.registration.showNotification(p.title ?? "Peringatan Cuaca BMKG", {
+        body: p.body,
+        data: p.data,
+        tag: p.tag,
+        icon: "/192x192.png",
+      })
+    )
+    return
   }
 })
 

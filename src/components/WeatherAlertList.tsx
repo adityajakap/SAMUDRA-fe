@@ -7,10 +7,11 @@ import type { BeachLocation } from "../types/api"
 
 interface WeatherAlertListProps {
   selectedBeach?: BeachLocation;
+  disableFilter?: boolean;
 }
 
-export function WeatherAlertList({ selectedBeach }: WeatherAlertListProps) {
-  const { alerts, loading, error } = useWeatherAlerts(selectedBeach)
+export function WeatherAlertList({ selectedBeach, disableFilter = false }: WeatherAlertListProps) {
+  const { alerts, loading, error } = useWeatherAlerts(selectedBeach, disableFilter)
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
