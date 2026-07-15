@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching"
+import { cleanupOutdatedCaches, precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching"
 import type { PrecacheEntry } from "workbox-precaching"
 
 declare const self: ServiceWorkerGlobalScope & {
@@ -129,7 +129,23 @@ precacheAndRoute(self.__WB_MANIFEST)
 // PWA Runtime Caching Strategies
 // ==========================================
 
-import { registerRoute } from 'workbox-routing';
+// Enable offline SPA routing by serving index.html for navigation requests
+try {
+  const handler = createHandlerBoundToURL('index.html');
+  const navigationRoute = new NavigationRoute(handler, {
+    denylist: [
+      new RegExp('^/bmkg'),
+      new RegExp('^/bmkg-api'),
+      new RegExp('^/api'),
+      new RegExp('/[^/]+\\.[^/]+$'),
+    ]
+  });
+  registerRoute(navigationRoute);
+} catch (error) {
+  console.error('Error registering navigation route', error);
+}
+
+import { registerRoute, NavigationRoute } from 'workbox-routing';
 import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { OBSERVATION_OPTIONS } from './constants/reportConstants';
