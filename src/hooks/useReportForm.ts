@@ -79,8 +79,13 @@ export function useReportForm(): UseReportFormReturn {
       resetForm()
     } catch (error) {
       console.error('Error submitting report:', error)
-      alert('Gagal mengirim laporan. Silakan coba lagi.')
-      throw error
+      if (!navigator.onLine) {
+        alert('Anda sedang offline. Laporan telah disimpan dan akan dikirim secara otomatis saat koneksi kembali.')
+        resetForm()
+      } else {
+        alert('Gagal mengirim laporan. Silakan coba lagi.')
+        throw error
+      }
     } finally {
       setIsSubmitting(false)
     }

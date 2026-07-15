@@ -126,7 +126,15 @@ export const ReportBottomSheet = ({ isOpen, onClose, beachLocation }: ReportBott
           setError(err.message || 'Terjadi kesalahan saat mengirim laporan');
         }
       } else {
-        setError('Terjadi kesalahan jaringan. Silakan coba lagi.');
+        if (!navigator.onLine) {
+          // Laporan diantrekan oleh Background Sync
+          setStep('success');
+          setTimeout(() => {
+            handleClose();
+          }, 3500);
+        } else {
+          setError('Terjadi kesalahan jaringan. Silakan coba lagi.');
+        }
       }
     } finally {
       setIsSubmitting(false);
@@ -361,9 +369,13 @@ export const ReportBottomSheet = ({ isOpen, onClose, beachLocation }: ReportBott
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
                 <CheckCircle2 className="w-10 h-10 text-green-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Laporan Terkirim!</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                {!navigator.onLine ? 'Laporan Disimpan Luring!' : 'Laporan Terkirim!'}
+              </h3>
               <p className="text-gray-600 text-center mb-2">
-                Terima kasih atas laporan Anda tentang tanda alam
+                {!navigator.onLine 
+                  ? 'Anda sedang offline. Laporan masuk antrean dan akan otomatis dikirim saat koneksi kembali.'
+                  : 'Terima kasih atas laporan Anda tentang tanda alam'}
               </p>
               <p className="text-sm text-gray-500 text-center">
                 Sistem AI kami akan segera menganalisis informasi ini untuk prakiraan cuaca.

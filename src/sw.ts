@@ -146,8 +146,9 @@ try {
 }
 
 import { registerRoute, NavigationRoute } from 'workbox-routing';
-import { NetworkFirst, StaleWhileRevalidate } from 'workbox-strategies';
+import { NetworkFirst, StaleWhileRevalidate, NetworkOnly } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
+import { BackgroundSyncPlugin } from 'workbox-background-sync';
 import { OBSERVATION_OPTIONS } from './constants/reportConstants';
 
 // Cache BMKG APIs (Forecast and RSS) - StaleWhileRevalidate
@@ -166,7 +167,7 @@ registerRoute(
 
 // Cache Backend API (History, Alerts) - NetworkFirst
 registerRoute(
-  ({ url }) => url.href.includes('api.samudraapp.com/api'),
+  ({ url }) => url.href.includes('api.samudraapp.com/api') && !url.href.includes('/api/report'),
   new NetworkFirst({
     cacheName: 'backend-api-cache',
     plugins: [
@@ -176,6 +177,19 @@ registerRoute(
       }),
     ],
   })
+);
+
+// Background Sync for Offline Reports
+const bgSyncPlugin = new BackgroundSyncPlugin('report-queue', {
+  maxRetentionTime: 24 * 60, // Retry for max of 24 Hours
+});
+
+registerRoute(
+  ({ url }) => url.href.includes('api.samudraapp.com/api/report'),
+  new NetworkOnly({
+    plugins: [bgSyncPlugin]
+  }),
+  'POST'
 );
 
 self.addEventListener("message", (event) => {
@@ -231,7 +245,8 @@ self.addEventListener("push", (event) => {
           return
         }
 
-        if (!payloadBeach) {
+        const isSilentPush = !payload?.title && !payload?.body;
+        if (isSilentPush || !payloadBeach) {
           try {
             const latest = await fetchLatestDistributed(selectedBeach)
             if (!latest) return
