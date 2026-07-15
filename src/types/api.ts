@@ -70,6 +70,7 @@ export interface ActiveWarningEvent {
   decision: {
     is_actionable: boolean;
     community_characteristics?: string;
+    shouldDistribute?: boolean;
   };
   ml: {
     action_recommendation?: string;

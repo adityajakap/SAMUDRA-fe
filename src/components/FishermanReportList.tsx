@@ -56,7 +56,8 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
   }
 
   // Safe optional chaining to prevent crashes
-  const isActionable = activeReport?.active_warning?.alertEvent?.decision?.is_actionable ?? false;
+  const isActionable = activeReport?.active_warning?.alertEvent?.decision?.is_actionable === false;
+  const hasReachedThreshold = activeReport?.active_warning?.alertEvent?.decision?.shouldDistribute ?? false;
   const actionRecommendation = activeReport?.active_warning?.alertEvent?.ml?.action_recommendation;
 
   const hasWarning = activeReport?.active_warning != null;
@@ -64,7 +65,6 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
   // Kembalikan filter ke count > 0 agar semua tanda terlihat JIKA card ditampilkan
   const reportedCodes = Object.keys(counts).filter(code => counts[code].count > 0)
 
-  const windowMinutes = Math.round((activeReport?.window_ms ?? 600000) / 60000)
 
   // Mapping codes to labels with counts
   const tandaDenganCount = reportedCodes.map(code => {
@@ -107,7 +107,7 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
             Coba lagi
           </button>
         </div>
-      ) : (!hasWarning || tandaDenganCount.length === 0) ? (
+      ) : (!hasWarning || !hasReachedThreshold || tandaDenganCount.length === 0) ? (
         <div className="flex flex-col items-center gap-3 py-8 text-center">
           <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
             <ShieldAlert className="w-6 h-6 text-green-600" />
@@ -124,8 +124,8 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
             <div className="flex-shrink-0">
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center ${isActionable
-                    ? "bg-red-100 text-red-600"
-                    : "bg-blue-100 text-blue-600"
+                  ? "bg-red-100 text-red-600"
+                  : "bg-blue-100 text-blue-600"
                   }`}
               >
                 {isActionable ? (
@@ -141,15 +141,15 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
                 Status {BEACH_LOCATIONS.find(b => b.value === selectedBeach)?.label ?? selectedBeach}
               </h2>
               <p className="text-xs text-gray-500">
-                {windowMinutes} Menit Terakhir
+                Laporan Aktif
               </p>
             </div>
 
             {/* Action Badge */}
             <div
               className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${isActionable
-                  ? "bg-red-100 text-red-700"
-                  : "bg-blue-100 text-blue-700"
+                ? "bg-red-100 text-red-700"
+                : "bg-blue-100 text-blue-700"
                 }`}
             >
               {isActionable ? (
@@ -157,7 +157,7 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
               ) : (
                 <Waves className="w-3 h-3" aria-hidden />
               )}
-              {isActionable ? "Perlu Tindakan" : "Minim Tindakan"}
+              {isActionable ? "Perlu Tindakan" : "Perlu Kewaspadaan"}
             </div>
           </div>
 
@@ -186,8 +186,8 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
               <p className="text-sm font-semibold">Rekomendasi Aksi</p>
               <div
                 className={`mt-1 p-3 rounded-lg text-sm ${isActionable
-                    ? "bg-red-50 text-red-800 border border-red-200"
-                    : "bg-blue-50 text-blue-800 border border-blue-200"
+                  ? "bg-red-50 text-red-800 border border-red-200"
+                  : "bg-blue-50 text-blue-800 border border-blue-200"
                   }`}
               >
                 {actionRecommendation}
