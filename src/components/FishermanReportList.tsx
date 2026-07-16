@@ -59,11 +59,11 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
   const isActionable = activeReport?.active_warning?.alertEvent?.decision?.is_actionable === false;
   const hasReachedThreshold = activeReport?.active_warning?.alertEvent?.decision?.shouldDistribute ?? false;
   const actionRecommendation = activeReport?.active_warning?.alertEvent?.ml?.action_recommendation;
+  const signDescription = activeReport?.active_warning?.alertEvent?.ml?.sign_description;
 
   const hasWarning = activeReport?.active_warning != null;
-  const counts = activeReport?.counts ?? {}
-  // Kembalikan filter ke count > 0 agar semua tanda terlihat JIKA card ditampilkan
-  const reportedCodes = Object.keys(counts).filter(code => counts[code].count > 0)
+  const reportCounts = activeReport?.active_warning?.reportCounts ?? {};
+  const reportedCodes = Object.keys(reportCounts).filter(code => reportCounts[code] > 0)
 
 
   // Mapping codes to labels with counts
@@ -73,8 +73,8 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
     )
     return {
       label: option?.label ?? code,
-      count: counts[code].count,
-      triggered: counts[code].triggered
+      count: reportCounts[code],
+      triggered: true // Assume triggered if it's in active_warning reportCounts
     }
   })
 
@@ -107,7 +107,7 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
             Coba lagi
           </button>
         </div>
-      ) : (!hasWarning || !hasReachedThreshold || tandaDenganCount.length === 0) ? (
+      ) : (!hasWarning || !hasReachedThreshold) ? (
         <div className="flex flex-col items-center gap-3 py-8 text-center">
           <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
             <ShieldAlert className="w-6 h-6 text-green-600" />
@@ -164,11 +164,7 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
           {/* Tanda yang Diamati (Counts) */}
           <div className="mt-3">
             <p className="text-sm font-semibold">Tanda yang Diamati</p>
-            {tandaDenganCount.length === 0 ? (
-              <p className="mt-2 text-sm text-gray-500">
-                Belum ada tanda yang tercatat.
-              </p>
-            ) : (
+            {tandaDenganCount.length > 0 ? (
               <ul className="mt-2 rounded-md p-3 text-sm text-gray-700 list-disc pl-5 space-y-1 [&>li::marker]:text-primary bg-gray-50 border border-gray-100">
                 {tandaDenganCount.map((item, idx) => (
                   <li key={idx}>
@@ -177,6 +173,14 @@ export function FishermanReportList({ selectedBeach }: FishermanReportListProps)
                   </li>
                 ))}
               </ul>
+            ) : signDescription ? (
+              <p className="mt-2 text-sm text-gray-700 bg-gray-50 border border-gray-100 p-3 rounded-md">
+                {signDescription}
+              </p>
+            ) : (
+              <p className="mt-2 text-sm text-gray-500">
+                Belum ada tanda yang tercatat.
+              </p>
             )}
           </div>
 

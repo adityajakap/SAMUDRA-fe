@@ -75,6 +75,7 @@ export interface ActiveWarningEvent {
   ml: {
     action_recommendation?: string;
     active_warning?: string[];
+    sign_description?: string;
   };
   input: {
     lik_codes: string[];
@@ -86,6 +87,8 @@ export interface ActiveWarning {
   codes: string[];
   triggeredAt: number;
   alertId: string;
+  reportCount?: number;
+  reportCounts?: Record<string, number>;
   alertEvent: ActiveWarningEvent;
 }
 

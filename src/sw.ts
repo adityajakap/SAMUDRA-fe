@@ -26,6 +26,7 @@ type HistoryItem = {
     shouldDistribute?: boolean
     action?: string
     is_multisign?: boolean
+    is_actionable?: boolean
   }
   ml?: {
     action?: string
@@ -255,8 +256,8 @@ self.addEventListener("push", (event) => {
             const lastSeen = await getLastSeen(selectedBeach)
             if (latestTimestamp <= lastSeen) return
 
-            const isActionable = latest.decision?.action === "Actionable" || latest.ml?.action === "Actionable"
-            const actionLabel = isActionable ? "⚠️ Actionable" : "✅ Low"
+            const isActionable = latest.decision?.is_actionable === false;
+            const actionLabel = isActionable ? "⚠️ Perlu Tindakan" : "✅ Perlu Kewaspadaan"
             const beachLabel = formatBeachLabel(selectedBeach)
 
             const likCodes = latest.input?.lik_codes || []
