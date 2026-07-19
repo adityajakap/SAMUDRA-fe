@@ -7,7 +7,7 @@ export function Header() {
         backgroundColor: '#0077ff'
       }}
     >
-      <h1>SAMUDRAS</h1>
+      <h1>SAMUDRA</h1>
     </header>
   )
 }
