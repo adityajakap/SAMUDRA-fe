@@ -76,6 +76,7 @@ export interface ActiveWarningEvent {
     action_recommendation?: string;
     active_warning?: string[];
     sign_description?: string;
+    escalation_level?: 1 | 2 | 3 | 4;
   };
   input: {
     lik_codes: string[];
