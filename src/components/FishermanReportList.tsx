@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { RefreshCw, AlertTriangle, Waves, ShieldAlert, Info, AlertCircle, Siren, X, ChevronDown, CheckCircle2 } from "lucide-react"
+import { RefreshCw, AlertTriangle, ShieldAlert, Info, AlertCircle, Siren, X, ChevronDown, CheckCircle2 } from "lucide-react"
 import { reportService } from "../services/reportService"
 import { BEACH_LOCATIONS } from "../constants/observationData"
 import type { BeachLocation, ActiveReportResponse } from "../types/api"
